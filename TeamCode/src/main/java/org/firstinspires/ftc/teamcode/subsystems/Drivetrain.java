@@ -12,7 +12,7 @@ public class Drivetrain implements Subsystem {
     double y, x, rx, FLPower, BLPower, FRPower, BRPower, heading, rotX, rotY;
     private RevIMU imu;
     private Mode mode;
-    private double speed = 0.85, desiredHeading = 0.0;
+    private double speed = 1, desiredHeading = 0.0;
 
     enum Mode {
         FC, RC
@@ -71,9 +71,9 @@ public class Drivetrain implements Subsystem {
                 rotY = x * Math.sin(heading) + y * Math.cos(heading);
 
                 FLPower = (rotY + rotX + rx);
-                BLPower = (rotY - rotX + rx)*1.1;
+                BLPower = (rotY - rotX + rx);
                 FRPower = (rotY - rotX - rx);
-                BRPower = (rotY + rotX - rx)*1.1;
+                BRPower = (rotY + rotX - rx);
                 break;
 
             case RC:
