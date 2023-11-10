@@ -109,6 +109,10 @@ public abstract class BaseOp extends OpMode {
             desiredSpeed = 0.7 * multiplier;
         }
 
+        if(driver.isDown(Button.RIGHT_BUMPER)) {
+            desiredSpeed *= 0.25;
+        }
+
         bot.drivetrain.setSpeed(desiredSpeed);
 
 
@@ -127,7 +131,30 @@ public abstract class BaseOp extends OpMode {
 
         // ---------------------------- OPERATOR CODE ---------------------------- //
 
-        //empty because it is just a drivetrain so far :)
+        if(operator.isDown(Button.DPAD_UP)) {
+            if(bot.actuator.getActuator().getCurrentPosition()>-1000) {
+                bot.actuator.getActuator().setPower(0.5);
+            }
+            else {
+                bot.actuator.getActuator().setPower(0);
+            }
+            //bot.actuator.moveUp();
+        }
+        else if(operator.isDown(Button.DPAD_DOWN)) {
+            if(bot.actuator.getActuator().getCurrentPosition()<1000) {
+                bot.actuator.getActuator().setPower(-0.5);
+            }
+            else {
+                bot.actuator.getActuator().setPower(0);
+            }
+            //bot.actuator.moveDown();
+        }
+        else{
+            bot.actuator.getActuator().setPower(0);
+        }
+
+        telemetry.addLine("Actuator Position: " + bot.actuator.getActuator().getCurrentPosition());
+        telemetry.update();
 
     }
 
