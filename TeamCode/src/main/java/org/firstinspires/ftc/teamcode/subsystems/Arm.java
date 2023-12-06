@@ -8,8 +8,7 @@ import org.firstinspires.ftc.teamcode.commands.*;
 public class Arm {
 
     private Servo arm;
-    private double GROUND = 0, DEPOSITING = 0;
-    private double update = 0.05;
+    private double open = 0, close = 0;
 
     State state;
     private RunMode runMode;
@@ -17,7 +16,23 @@ public class Arm {
     public Arm(HardwareMap hardwareMap){
         arm = hardwareMap.servo.get("arm");
         //arm.setDirection(Servo.Direction.REVERSE);
+        arm.setPosition(0);
+    }
+
+    public void armResting() {
+        arm.setPosition(.6784313725);
+    }
+
+    public void armUp() {
+        arm.setPosition(.0784313725);
+    }
+
+    public void armDepositing() {
+        arm.setPosition(0.33);
+    }
 
 
+    public Servo getArm() {
+        return arm;
     }
 }

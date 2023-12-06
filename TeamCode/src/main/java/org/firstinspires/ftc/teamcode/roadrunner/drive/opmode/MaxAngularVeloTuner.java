@@ -29,7 +29,6 @@ import static org.firstinspires.ftc.teamcode.roadrunner.drive.DriveConstants.*;
  */
 
 @Config
-@Disabled
 @Autonomous(group = "drive")
 public class MaxAngularVeloTuner extends LinearOpMode {
     public static double RUNTIME = 4.0;

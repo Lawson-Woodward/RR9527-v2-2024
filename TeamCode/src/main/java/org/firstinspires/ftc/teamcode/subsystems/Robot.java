@@ -15,6 +15,7 @@ public class Robot {
     public Arm arm;
     public Claw claw;
     public LinearSlides slide;
+    public TestMotor test;
     private State state;
     Telemetry telemetry;
 
@@ -23,13 +24,14 @@ public class Robot {
 
         drivetrain = new Drivetrain(hardwareMap);
         actuator = new LinearActuator(hardwareMap);
-        //arm = new Arm(hardwareMap);
-        //claw = new Claw(hardwareMap);
-        //slide = new LinearSlides(hardwareMap);
+        //test = new TestMotor(hardwareMap);
+        arm = new Arm(hardwareMap);
+        claw = new Claw(hardwareMap);
+        slide = new LinearSlides(hardwareMap);
     }
 
     public void setPosition(State state){
-        actuator.setPosition(state);
+        //actuator.setPosition(state);
         //slide.setPosition(state);
         //claw.setPosition(state);
         this.state = state;
