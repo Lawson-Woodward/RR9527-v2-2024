@@ -1,5 +1,5 @@
 package org.firstinspires.ftc.teamcode.commands;
 
-public enum State {
-    GROUND, DEPOSITING
+public enum RunMode {
+    AUTO, TELE
 }

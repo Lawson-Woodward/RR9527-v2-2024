@@ -109,6 +109,10 @@ public abstract class BaseOp extends OpMode {
             desiredSpeed = 0.7 * multiplier;
         }
 
+        if(driver.isDown(Button.RIGHT_BUMPER)) {
+            desiredSpeed *= 0.25;
+        }
+
         bot.drivetrain.setSpeed(desiredSpeed);
 
 
@@ -127,8 +131,64 @@ public abstract class BaseOp extends OpMode {
 
         // ---------------------------- OPERATOR CODE ---------------------------- //
 
-        //empty because it is just a drivetrain so far :)
+        if(operator.isDown(Button.DPAD_UP)) {
+            //bot.actuator.getActuator().setPower(-0.5);
+            bot.actuator.moveUp();
+        }
+        else if(operator.isDown(Button.DPAD_DOWN)) {
+            //bot.actuator.getActuator().setPower(0.5);
+            bot.actuator.moveDown();
+        }
+        else {
+            bot.actuator.getActuator().setPower(0);
+            //bot.actuator.setPower(0);
+        }
 
+        telemetry.addLine("Actuator Position: " + bot.actuator.getActuator().getCurrentPosition());
+        //telemetry.update();
+
+        //  ------------------------------ PID CODE ------------------------------ //
+
+        if(operator.isDown(Button.RIGHT_BUMPER)) {
+            bot.slide.slidesManualUp();
+        }
+        else if(operator.isDown(Button.LEFT_BUMPER)) {
+            bot.slide.slidesManualDown();
+        }
+        else {
+            bot.slide.getSlides().setPower(-0.07);
+        }
+
+        if(operator.wasJustPressed(Button.DPAD_LEFT)) {
+            //bot.arm.getArm().setPosition(bot.arm.getArm().getPosition()+0.01);
+            //bot.claw.getClaw().setPosition(0);
+            bot.claw.getClaw().setPosition(bot.claw.getClaw().getPosition()+0.02);
+        }
+        if(operator.wasJustPressed(Button.DPAD_RIGHT)) {
+            //bot.arm.getArm().setPosition(bot.arm.getArm().getPosition()-0.01);
+            //bot.claw.getClaw().setPosition(.0784313725);
+            bot.claw.getClaw().setPosition(bot.claw.getClaw().getPosition()-0.02);
+        }
+
+        if(operator.wasJustPressed(Button.A)) {
+            bot.arm.getArm().setPosition(.67);
+        }
+        if(operator.wasJustPressed(Button.X)) {
+            bot.arm.getArm().setPosition(.5);
+        }
+        if(operator.wasJustPressed(Button.Y)) {
+            bot.arm.getArm().setPosition(.0789);
+        }
+
+        telemetry.addLine("Claw Position: " + bot.claw.getClaw().getPosition());
+        telemetry.addLine("Arm Position: " + bot.arm.getArm().getPosition());
+
+        telemetry.addLine("Slides Position: " + bot.slide.getSlides().getCurrentPosition());
+        telemetry.update();
+
+        /*telemetry.addData("currentPos: ",currentPosition);
+        telemetry.addData("power: ", pidOutput);
+        telemetry.addData("slidePrefere: ",slidePreference);*/
     }
 
     @Override

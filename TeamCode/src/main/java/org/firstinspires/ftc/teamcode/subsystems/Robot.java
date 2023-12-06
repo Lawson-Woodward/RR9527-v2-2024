@@ -11,6 +11,11 @@ import org.firstinspires.ftc.teamcode.commands.State;
 public class Robot {
 
     public Drivetrain drivetrain;
+    public LinearActuator actuator;
+    public Arm arm;
+    public Claw claw;
+    public LinearSlides slide;
+    public TestMotor test;
     private State state;
     Telemetry telemetry;
 
@@ -18,16 +23,22 @@ public class Robot {
         this.telemetry = telemetry;
 
         drivetrain = new Drivetrain(hardwareMap);
+        actuator = new LinearActuator(hardwareMap);
+        //test = new TestMotor(hardwareMap);
+        arm = new Arm(hardwareMap);
+        claw = new Claw(hardwareMap);
+        slide = new LinearSlides(hardwareMap);
     }
 
     public void setPosition(State state){
-        //set robot positions based on state (later)
-    }
-
-    public void setState(State state) {
+        //actuator.setPosition(state);
+        //slide.setPosition(state);
+        //claw.setPosition(state);
         this.state = state;
     }
-    public State getState() {
+
+    public void setState(State state){this.state = state;}
+    public State getState(){
         return state;
     }
 }
