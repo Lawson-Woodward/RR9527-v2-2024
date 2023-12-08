@@ -21,11 +21,12 @@ import org.firstinspires.ftc.teamcode.commands.VoltageReader;
 import java.util.*;
 
 @Config
-public abstract class ConstraintTest extends OpMode {
+public abstract class LogicTest extends OpMode {
 
     private Robot bot;
 
     private ElapsedTime runtime;
+    private ElapsedTime timer;
     private GamepadEx driver, operator;
     private VoltageReader voltageReader;
     int alliance;
@@ -134,25 +135,35 @@ public abstract class ConstraintTest extends OpMode {
         //actuator code
         if(operator.isDown(Button.DPAD_UP)) {
             bot.actuator.moveUp();
+            bot.actuator.canGoDown(false);
         } else if(operator.isDown(Button.DPAD_DOWN)) {
+            bot.actuator.canGoDown(true);
             bot.actuator.moveDown();
+            bot.actuator.canGoDown(false);
         } else {
             bot.actuator.getActuator().setPower(0);
         } telemetry.addLine("Actuator Position: " + bot.actuator.getActuator().getCurrentPosition());
 
-        //  ------------------------------ PID CODE ------------------------------ //
-
-        //slides code
+        //intake/deposit logic
         if(operator.wasJustPressed(Button.RIGHT_BUMPER)) {
+            bot.claw.closeClaw();
+            if(bot.slide.getSlides().getCurrentPosition()<-1000) {  //change  later
+                bot.arm.deposit();
+            } else {
+                bot.arm.traveling();
+            }
             bot.slide.slidesManualUp();
-            //bot.arm.deposit();
+            bot.actuator.canGoDown(true);
             //TO ACTUALLY DEPOSIT USE A DIFFERENT BUTTON (press twice)
             //need to HOLD this button down during deposit or it will reset
         } else {
             bot.slide.slidesManualDown();
             bot.actuator.moveDown();
-            //bot.arm.intake();
-            //bot.claw.intake();
+            if(bot.slide.getSlides().getCurrentPosition()<-20) {
+                bot.arm.traveling();
+            } else {
+                bot.arm.intake();
+            }
         }
 
         //claw deposit code
@@ -162,7 +173,18 @@ public abstract class ConstraintTest extends OpMode {
             bot.claw.releaseTwo();
         }
 
+        //intake logic
+        if(operator.wasJustPressed(Button.LEFT_BUMPER)) {
+            bot.claw.releaseTwo();
+            bot.intake.intaking();
+        } else {
+            bot.claw.closeClaw();
+            bot.intake.resting();
+        }
 
+        if(operator.wasJustPressed(Button.X)) {
+            bot.intake.initIntake();
+        }
 
         telemetry.addLine("Claw Position: " + bot.claw.getClaw().getPosition());
         telemetry.addLine("Arm Position: " + bot.arm.getArm().getPosition());

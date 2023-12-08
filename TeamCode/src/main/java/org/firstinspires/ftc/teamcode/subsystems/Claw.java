@@ -15,25 +15,22 @@ public class Claw {
 
     public Claw(HardwareMap hardwareMap){
         claw = hardwareMap.servo.get("claw");
-        //arm.setDirection(Servo.Direction.REVERSE);
-        claw.setPosition(.0789);
+        //arm.setDirection(Servo.Direction.REVERSE);   //do we need to reverse this???
+        claw.setPosition(0);
     }
 
-    public void openClaw() {
-        claw.setPosition(.0784313725);
+    public void releaseOne() {
+        //SLIGHTLY open the claw, just to let the first pixel out
+        //claw.setPosition(0.01);    //a little bit more than 0
+    }
+
+    public void releaseTwo() {
+        //COMPLETELY open the claw, even if there are two in the outtake at once
+        //claw.setPosition(0.02);    //quite a bit more than 0
     }
 
     public void closeClaw() {
         claw.setPosition(0);
-    }
-
-    public void setPosition() {
-        if(claw.getPosition()>0.07) {
-            closeClaw();
-        }
-        else if (claw.getPosition()<0.01) {
-            openClaw();
-        }
     }
 
     public Servo getClaw() {

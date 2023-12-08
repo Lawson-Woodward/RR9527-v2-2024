@@ -15,12 +15,12 @@ public class LinearSlides {
     public LinearSlides(HardwareMap hardwareMap) {
         spool = (DcMotorEx) hardwareMap.dcMotor.get("spool");
         //actuator.setDirection(DcMotorEx.Direction.REVERSE);
-        spool.setPower(0);
+        spool.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        spool.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         spool.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        //spool.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        //actuator.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         spool.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         //actuator.setTargetPosition(ground);
+        spool.setPower(0);
     }
 
     /*public void setPosition(State state) {
@@ -32,11 +32,11 @@ public class LinearSlides {
         }
     }*/
 
+
     public void slidesManualUp() {
-        if(spool.getCurrentPosition()>-3000) {
+        if(spool.getCurrentPosition()>-1500) {
             spool.setPower(-1);
-        }
-        else {
+        } else {
             spool.setPower(0);
         }
     }
@@ -44,8 +44,7 @@ public class LinearSlides {
     public void slidesManualDown() {
         if(spool.getCurrentPosition()<250) {
             spool.setPower(1);
-        }
-        else {
+        } else {
             spool.setPower(0);
         }
     }

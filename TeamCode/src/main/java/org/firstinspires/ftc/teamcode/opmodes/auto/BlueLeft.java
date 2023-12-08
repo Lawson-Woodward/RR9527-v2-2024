@@ -4,14 +4,15 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 @Autonomous(name = "BlueLeft")
 public class BlueLeft extends LinearOpMode {
-        public DcMotorEx backLeft;
-        public DcMotorEx backRight;
-        public DcMotorEx frontLeft;
-        public DcMotorEx frontRight;
+        public DcMotorEx BL;
+        public DcMotorEx BR;
+        public DcMotorEx FL;
+        public DcMotorEx FR;
 
         /*private int leftBack;
         private int rightBack;
@@ -19,25 +20,25 @@ public class BlueLeft extends LinearOpMode {
         private int rightFront;*/
         @Override
         public void runOpMode() {
-            backLeft = (DcMotorEx) hardwareMap.dcMotor.get("backLeft");
-            backRight = (DcMotorEx) hardwareMap.dcMotor.get("backRight");
-            frontLeft = (DcMotorEx) hardwareMap.dcMotor.get("frontLeft");
-            frontRight = (DcMotorEx) hardwareMap.dcMotor.get("frontRight");
+            BL = (DcMotorEx) hardwareMap.dcMotor.get("backLeft");
+            BR = (DcMotorEx) hardwareMap.dcMotor.get("backRight");
+            FL = (DcMotorEx) hardwareMap.dcMotor.get("frontLeft");
+            FR = (DcMotorEx) hardwareMap.dcMotor.get("frontRight");
 
-            frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            FL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            FR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            //backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            //backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-            backLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            backRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            frontLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            frontRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            //backLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            //backRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            FL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            FR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-            backLeft.setDirection(DcMotor.Direction.REVERSE);
-            backRight.setDirection(DcMotor.Direction.FORWARD);
-            frontLeft.setDirection(DcMotor.Direction.REVERSE);
-            frontRight.setDirection(DcMotor.Direction.FORWARD);
+            //backLeft.setDirection(DcMotor.Direction.REVERSE);
+            //backRight.setDirection(DcMotor.Direction.FORWARD);
+            FL.setDirection(DcMotor.Direction.REVERSE);
+            FR.setDirection(DcMotor.Direction.FORWARD);
 
 
             waitForStart();
@@ -46,18 +47,18 @@ public class BlueLeft extends LinearOpMode {
             int time2 = 300;
             timer = new ElapsedTime();
             while (timer.milliseconds() <= time2) {
-                backLeft.setPower(-1);
-                backRight.setPower(1);
-                frontLeft.setPower(-1);
-                frontRight.setPower(1);
+                //backLeft.setPower(-1);
+                //backRight.setPower(1);
+                FL.setPower(-1);
+                FR.setPower(1);
             }
             int time3 = 600;
             timer = new ElapsedTime();
             while (timer.milliseconds() <= time3) {
-                backLeft.setPower(1);
-                backRight.setPower(1);
-                frontLeft.setPower(1);
-                frontRight.setPower(1);
+                //backLeft.setPower(1);
+               // backRight.setPower(1);
+                FL.setPower(1);
+                FR.setPower(1);
             }
 
         }

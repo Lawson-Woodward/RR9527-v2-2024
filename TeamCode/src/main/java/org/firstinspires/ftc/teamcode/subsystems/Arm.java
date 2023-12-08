@@ -19,16 +19,16 @@ public class Arm {
         arm.setPosition(0);
     }
 
-    public void armResting() {
-        arm.setPosition(.6784313725);
+    public void intake() {
+        arm.setPosition(0); //this is the resting position
     }
 
-    public void armUp() {
-        arm.setPosition(.0784313725);
+    public void traveling() {
+        arm.setPosition(-0.02); //a tiny bit up while traveling to avoid getting stuck
     }
 
-    public void armDepositing() {
-        arm.setPosition(0.33);
+    public void deposit() {
+        arm.setPosition(0.6); //all the way down to depositing position; should be PARALLEL TO BACKDROP
     }
 
 
