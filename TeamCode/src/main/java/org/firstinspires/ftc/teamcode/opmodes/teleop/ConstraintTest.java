@@ -21,7 +21,7 @@ import org.firstinspires.ftc.teamcode.commands.VoltageReader;
 import java.util.*;
 
 @Config
-public abstract class BaseOp extends OpMode {
+public abstract class ConstraintTest extends OpMode {
 
     private Robot bot;
 

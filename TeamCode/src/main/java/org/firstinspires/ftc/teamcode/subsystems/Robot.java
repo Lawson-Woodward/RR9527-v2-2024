@@ -17,6 +17,7 @@ public class Robot {
     public LinearSlides slide;
     public TestMotor test;
     private State state;
+    public Intake intakeServo;
     Telemetry telemetry;
 
     public Robot(HardwareMap hardwareMap, Telemetry telemetry){
@@ -28,6 +29,7 @@ public class Robot {
         arm = new Arm(hardwareMap);
         claw = new Claw(hardwareMap);
         slide = new LinearSlides(hardwareMap);
+        intakeServo = new Intake(hardwareMap);
     }
 
     public void setPosition(State state){
