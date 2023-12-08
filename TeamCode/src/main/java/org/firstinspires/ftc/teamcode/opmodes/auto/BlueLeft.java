@@ -1,16 +1,13 @@
 package org.firstinspires.ftc.teamcode.opmodes.auto;
 
-public class BlueLeft {
-    package org.firstinspires.ftc.teamcode;
-
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-    @Autonomous(name = "BlueLeft")
-    public class BlueLeft extends LinearOpMode {
+@Autonomous(name = "BlueLeft")
+public class BlueLeft extends LinearOpMode {
         public DcMotorEx backLeft;
         public DcMotorEx backRight;
         public DcMotorEx frontLeft;
@@ -65,4 +62,3 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
         }
     }
-}
