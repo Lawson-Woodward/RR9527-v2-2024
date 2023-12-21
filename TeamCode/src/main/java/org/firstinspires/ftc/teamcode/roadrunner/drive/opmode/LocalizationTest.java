@@ -1,21 +1,11 @@
 package org.firstinspires.ftc.teamcode.roadrunner.drive.opmode;
 
-import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.config.Config;
-import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.util.NanoClock;
-import com.qualcomm.robotcore.eventloop.opmode.*;
-import com.qualcomm.robotcore.hardware.*;
-import com.qualcomm.robotcore.util.RobotLog;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 
-import org.firstinspires.ftc.robotcore.internal.system.Misc;;
 import org.firstinspires.ftc.teamcode.roadrunner.drive.SampleMecanumDrive;
-import org.firstinspires.ftc.teamcode.roadrunner.util.*;
-
-import java.util.ArrayList;
-import java.util.List;
-import static org.firstinspires.ftc.teamcode.roadrunner.drive.DriveConstants.*;
 
 /**
  * This is a simple teleop routine for testing localization. Drive the robot around like a normal
@@ -24,7 +14,6 @@ import static org.firstinspires.ftc.teamcode.roadrunner.drive.DriveConstants.*;
  * exercise is to ascertain whether the localizer has been configured properly (note: the pure
  * encoder localizer heading may be significantly off if the track width has not been tuned).
  */
-
 @TeleOp(group = "drive")
 public class LocalizationTest extends LinearOpMode {
     @Override

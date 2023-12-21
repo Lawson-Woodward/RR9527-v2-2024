@@ -15,9 +15,9 @@ public class Robot {
     public Arm arm;
     public Claw claw;
     public LinearSlides slide;
-    public TestMotor test;
     private State state;
     public Intake intake;
+    public Launcher plane;
     Telemetry telemetry;
 
     public Robot(HardwareMap hardwareMap, Telemetry telemetry){
@@ -25,11 +25,11 @@ public class Robot {
 
         drivetrain = new Drivetrain(hardwareMap);
         actuator = new LinearActuator(hardwareMap);
-        //test = new TestMotor(hardwareMap);
         arm = new Arm(hardwareMap);
         claw = new Claw(hardwareMap);
         slide = new LinearSlides(hardwareMap);
         intake = new Intake(hardwareMap);
+        plane = new Launcher(hardwareMap);
     }
 
     public void setPosition(State state){

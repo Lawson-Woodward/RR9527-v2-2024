@@ -14,7 +14,7 @@ public class LinearSlides {
 
     public LinearSlides(HardwareMap hardwareMap) {
         spool = (DcMotorEx) hardwareMap.dcMotor.get("spool");
-        //actuator.setDirection(DcMotorEx.Direction.REVERSE);
+        spool.setDirection(DcMotorEx.Direction.REVERSE);
         spool.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         spool.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         spool.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -33,19 +33,23 @@ public class LinearSlides {
     }*/
 
 
-    public void slidesManualUp() {
-        if(spool.getCurrentPosition()>-1500) {
-            spool.setPower(-1);
-        } else {
-            spool.setPower(0);
+    public void slidesManualUp(Arm arm) {
+        spool.setPower(-1);
+        if(getPosition()<800) {
+            arm.getArm().setPosition(0.49);
+        }
+        if(getPosition()>800) {
+            arm.getArm().setPosition(0.66);
         }
     }
 
-    public void slidesManualDown() {
-        if(spool.getCurrentPosition()<250) {
-            spool.setPower(1);
-        } else {
-            spool.setPower(0);
+    public void slidesManualDown(Arm arm) {
+        spool.setPower(1);
+        if(getPosition()<800) {
+            arm.getArm().setPosition(0.49);
+        }
+        if(getPosition()>800) {
+            arm.getArm().setPosition(0.66);
         }
     }
 

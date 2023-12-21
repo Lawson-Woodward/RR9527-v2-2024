@@ -1,21 +1,12 @@
 package org.firstinspires.ftc.teamcode.roadrunner.drive.opmode;
 
-import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
-import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.trajectory.*;
-import com.acmerobotics.roadrunner.util.NanoClock;
-import com.qualcomm.robotcore.eventloop.opmode.*;
-import com.qualcomm.robotcore.util.RobotLog;
+import com.acmerobotics.roadrunner.trajectory.Trajectory;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.robotcore.internal.system.Misc;;
 import org.firstinspires.ftc.teamcode.roadrunner.drive.SampleMecanumDrive;
-import org.firstinspires.ftc.teamcode.roadrunner.util.*;
-
-import java.util.ArrayList;
-import java.util.List;
-import static org.firstinspires.ftc.teamcode.roadrunner.drive.DriveConstants.*;
 
 /*
  * Op mode for preliminary tuning of the follower PID coefficients (located in the drive base
@@ -34,7 +25,6 @@ import static org.firstinspires.ftc.teamcode.roadrunner.drive.DriveConstants.*;
  * is recommended that you use the FollowerPIDTuner opmode for further fine tuning.
  */
 @Config
-@Disabled
 @Autonomous(group = "drive")
 public class BackAndForth extends LinearOpMode {
 

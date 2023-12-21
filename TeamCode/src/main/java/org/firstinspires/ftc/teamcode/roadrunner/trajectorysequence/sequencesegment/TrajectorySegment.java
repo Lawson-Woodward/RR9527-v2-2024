@@ -11,7 +11,6 @@ public final class TrajectorySegment extends SequenceSegment {
         // Note: Markers are already stored in the `Trajectory` itself.
         // This class should not hold any markers
         super(trajectory.duration(), trajectory.start(), trajectory.end(), Collections.emptyList());
-
         this.trajectory = trajectory;
     }
 

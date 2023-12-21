@@ -2,26 +2,27 @@ package org.firstinspires.ftc.teamcode.subsystems;
 
 
 import com.arcrobotics.ftclib.hardware.ServoEx;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 public class Intake {
-    private ServoEx leftLift;
-    private ServoEx rightLift;
+    private Servo leftLift;
+    private Servo rightLift;
     private CRServo compliant;
-    private ServoEx leftBrush;
-    private ServoEx rightBrush;
+    private Servo leftBrush;     //    0.5 is intaking maybe 1 position is push position
+    private Servo rightBrush;    //    0.5 is intaking maybe 0.0 position is push position
     private DcMotorEx carWash;
 
     public Intake(HardwareMap hardwareMap)
     {
-        leftLift = (ServoEx) hardwareMap.servo.get("leftLift");
-        rightLift = (ServoEx) hardwareMap.servo.get("rightLift"); //direction reversed
-        compliant = (CRServo) hardwareMap.crservo.get("compliant");
-        leftBrush = (ServoEx) hardwareMap.servo.get("leftBrush"); //check these names
-        rightBrush = (ServoEx) hardwareMap.servo.get("rightBrush");  //direction reversed
+        leftLift = hardwareMap.servo.get("leftLift");
+        rightLift = hardwareMap.servo.get("rightLift"); //direction reversed
+        compliant = hardwareMap.crservo.get("compliant");
+        leftBrush = hardwareMap.servo.get("leftBrush"); //check these names
+        rightBrush = hardwareMap.servo.get("rightBrush");  //direction reversed
 
         leftLift.setPosition(0);  //needs to be set to above ground
         rightLift.setPosition(0); //needs to be set to above ground
@@ -81,8 +82,65 @@ public class Intake {
         brushDown();
     }
 
+    public double getLeftLiftPosition()
+    {
+        return leftLift.getPosition();
+    }
+    public double getRightLiftPosition()
+    {
+        return rightLift.getPosition();
+    }
+    public double getCompliantPower()
+    {
+        //return compliant.getPower;
+        return 0.0;
+    }
+    public double getLeftBrushPosition()
+    {
+        return leftBrush.getPosition();
+    }
+    public double getRightBrushPosition()
+    {
+        return rightBrush.getPosition();
+    }
+
+    public double getCarWashPosition()
+    {
+        return carWash.getCurrentPosition();
+    }
+
+
     public void letDownSlowly() {
         //put pixel down slowly, just a nicer spitOut() for auto
+    }
+
+
+
+
+
+
+    public CRServo getCompliant() {
+        return compliant;
+    }
+
+    public DcMotorEx getCarWash() {
+        return carWash;
+    }
+
+    public Servo getLeftBrush() {
+        return leftBrush;
+    }
+
+    public Servo getRightBrush() {
+        return rightBrush;
+    }
+
+    public Servo getLeftLift() {
+        return leftLift;
+    }
+
+    public Servo getRightLift() {
+        return rightLift;
     }
 
 }

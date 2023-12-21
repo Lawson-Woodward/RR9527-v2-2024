@@ -152,12 +152,12 @@ public abstract class LogicTest extends OpMode {
             } else {
                 bot.arm.traveling();
             }
-            bot.slide.slidesManualUp();
+            bot.slide.slidesManualUp(bot.arm);
             bot.actuator.canGoDown(true);
             //TO ACTUALLY DEPOSIT USE A DIFFERENT BUTTON (press twice)
             //need to HOLD this button down during deposit or it will reset
         } else {
-            bot.slide.slidesManualDown();
+            bot.slide.slidesManualDown(bot.arm);
             bot.actuator.moveDown();
             if(bot.slide.getSlides().getCurrentPosition()<-20) {
                 bot.arm.traveling();

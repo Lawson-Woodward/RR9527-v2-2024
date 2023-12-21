@@ -10,13 +10,15 @@ public class Claw {
     private Servo claw;
     private double open = 0, close = 0;
 
+
+
     State state;
     private RunMode runMode;
 
     public Claw(HardwareMap hardwareMap){
         claw = hardwareMap.servo.get("claw");
         //arm.setDirection(Servo.Direction.REVERSE);   //do we need to reverse this???
-        claw.setPosition(0);
+        claw.setPosition(0.5);
     }
 
     public void releaseOne() {
