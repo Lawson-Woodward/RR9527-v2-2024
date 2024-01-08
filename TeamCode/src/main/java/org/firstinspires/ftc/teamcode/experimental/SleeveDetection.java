@@ -1,12 +1,11 @@
-/*
 
-THIS CODE IS NOT USED IN THE ACTUAL ROBOT!!!!!!
+//    THIS CODE IS NOT USED IN THE ACTUAL ROBOT!!!!!!
+//    It is a good example of what camera detection looks like from Cedar Park ROBOLOBOS.
+//    There is only one vision box, but the color still changes randomly between matches
+//    This code determines the object's COLOR instead of its LOCATION
 
-*/
 
-
-
-package org.firstinspires.ftc.teamcode.commands;
+package org.firstinspires.ftc.teamcode.experimental;
 
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
