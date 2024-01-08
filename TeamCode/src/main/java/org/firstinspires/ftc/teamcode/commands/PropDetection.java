@@ -83,10 +83,10 @@ public class PropDetection extends OpenCvPipeline {
         Scalar midSumColors = Core.sumElems(middleMat);
 
         // Get the minimum RGB value from every single channel
-        double minColor = Math.min(midSumColors.val[0], Math.min(midSumColors.val[1], midSumColors.val[2]));
+        double maxColor = Math.max(midSumColors.val[0], Math.max(midSumColors.val[1], midSumColors.val[2]));
 
         // Change the bounding box color based on the sleeve color
-        if (midSumColors.val[0] == minColor) {
+        if (midSumColors.val[0] == maxColor && midSumColors.val[0] > 100) {
             position = TSEPosition.MIDDLE;
             Imgproc.rectangle(
                     input,
@@ -95,7 +95,7 @@ public class PropDetection extends OpenCvPipeline {
                     RED,
                     2
             );
-        } else if (midSumColors.val[2] == minColor) {
+        } else if (midSumColors.val[2] == maxColor && midSumColors.val[2] > 100) {
             position = TSEPosition.RIGHT;
             Imgproc.rectangle(
                     input,
@@ -126,8 +126,10 @@ public class PropDetection extends OpenCvPipeline {
         Mat leftMat = input.submat(new Rect(pos2_pointA, pos2_pointB));
         Scalar leftSumColors = Core.sumElems(leftMat);
 
+        maxColor = Math.max(leftSumColors.val[0], Math.max(leftSumColors.val[1], leftSumColors.val[2]));
+
         // Change the bounding box color based on the sleeve color
-        if (leftSumColors.val[2] == minColor) {
+        if (leftSumColors.val[0] == maxColor && leftSumColors.val[0] > 100) {
             position = TSEPosition.MIDDLE;
             Imgproc.rectangle(
                     input,
@@ -136,7 +138,7 @@ public class PropDetection extends OpenCvPipeline {
                     RED,
                     2
             );
-        } else if (leftSumColors.val[0] == minColor) {
+        } else if (leftSumColors.val[2] == maxColor && leftSumColors.val[2] > 100) {
             position = TSEPosition.RIGHT;
             Imgproc.rectangle(
                     input,
@@ -168,8 +170,10 @@ public class PropDetection extends OpenCvPipeline {
         Mat rightMat = input.submat(new Rect(pos3_pointA, pos3_pointB));
         Scalar rightSumColors = Core.sumElems(rightMat);
 
+        maxColor = Math.max(rightSumColors.val[0], Math.max(rightSumColors.val[1], rightSumColors.val[2]));
+
         // Change the bounding box color based on the sleeve color
-        if (rightSumColors.val[0] == minColor) {
+        if (rightSumColors.val[0] == maxColor && rightSumColors.val[0] > 100) {
             position = TSEPosition.MIDDLE;
             Imgproc.rectangle(
                     input,
@@ -178,7 +182,7 @@ public class PropDetection extends OpenCvPipeline {
                     RED,
                     2
             );
-        } else if (rightSumColors.val[2] == minColor) {
+        } else if (rightSumColors.val[2] == maxColor && rightSumColors.val[2] > 100) {
             position = TSEPosition.RIGHT;
             Imgproc.rectangle(
                     input,
@@ -212,4 +216,16 @@ public class PropDetection extends OpenCvPipeline {
     public TSEPosition getPosition() {
         return position;
     }
+
+    public int[] getColors(Mat input) {
+        Mat middleMat = input.submat(new Rect(pos1_pointA, pos1_pointB));
+        Scalar midSumColors = Core.sumElems(middleMat);
+
+        // Get the minimum RGB value from every single channel
+        double maxColor = Math.max(midSumColors.val[0], Math.max(midSumColors.val[1], midSumColors.val[2]));
+
+        int[] colors = new int[] {};
+        return colors;
+    }
+
 }
