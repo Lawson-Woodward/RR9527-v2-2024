@@ -25,8 +25,8 @@ public class Drivetrain implements Subsystem {
         FR = hardwareMap.get(DcMotorEx.class, "FR");
         BR = hardwareMap.get(DcMotorEx.class, "BR");
 
-        BL.setDirection(DcMotorEx.Direction.REVERSE);
-        FL.setDirection(DcMotorEx.Direction.REVERSE);
+        //BR.setDirection(DcMotorEx.Direction.REVERSE);
+        //FR.setDirection(DcMotorEx.Direction.REVERSE);
 
         imu = new RevIMU(hardwareMap);
         imu.init();
@@ -44,9 +44,11 @@ public class Drivetrain implements Subsystem {
     public void switchModes() {
         if(mode.equals(Mode.RC)) {
             mode = Mode.FC;
+            //reverse();
         }
         else {
             mode = Mode.RC;
+            //reverse();
         }
     }
 
@@ -64,7 +66,7 @@ public class Drivetrain implements Subsystem {
         x = Math.pow(gamepad.getLeftX(), 3);
         rx = Math.pow(gamepad.getRightX(), 3);
 
-        switch (mode) {
+        switch (mode){
             case FC:
                 heading = Math.toRadians(-imu.getHeading()+180);
                 rotX = x * Math.cos(heading) - y * Math.sin(heading);
@@ -75,15 +77,14 @@ public class Drivetrain implements Subsystem {
                 FRPower = (rotY - rotX - rx);
                 BRPower = (rotY + rotX - rx);
                 break;
-
             case RC:
-                //y = -y;         //switch robot front
+                //y = -y;
                 //x = -x;
 
                 FLPower = (y + x + rx);
                 BLPower = (y - x + rx);
                 FRPower = (y - x - rx);
-                BRPower= (y + x - rx);
+                BRPower = (y + x - rx);
                 break;
         }
 
@@ -96,6 +97,22 @@ public class Drivetrain implements Subsystem {
         FR.setPower(FRPower * speed);
         BR.setPower(BRPower * speed);
     }
+
+    public void reverse() {
+        if(mode==Mode.RC) {
+            BL.setDirection(DcMotorEx.Direction.REVERSE);
+            FL.setDirection(DcMotorEx.Direction.REVERSE);
+            FR.setDirection(DcMotorEx.Direction.FORWARD);
+            BR.setDirection(DcMotorEx.Direction.FORWARD);
+        }
+        if(mode==Mode.FC) {
+            BL.setDirection(DcMotorEx.Direction.REVERSE);
+            FL.setDirection(DcMotorEx.Direction.REVERSE);
+            FR.setDirection(DcMotorEx.Direction.FORWARD);
+            BR.setDirection(DcMotorEx.Direction.FORWARD);
+        }
+    }
+
 
     public double getHeading() {
         return imu.getHeading();

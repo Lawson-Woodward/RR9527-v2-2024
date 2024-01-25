@@ -5,9 +5,9 @@ import com.qualcomm.robotcore.hardware.*;
 
 import org.firstinspires.ftc.teamcode.commands.*;
 
-public class Claw {
+public class Wrist {
 
-    private Servo rightClaw, leftClaw;
+    private Servo wrist;
     private double open = 0, close = 0;
 
 
@@ -15,12 +15,10 @@ public class Claw {
     State state;
     private RunMode runMode;
 
-    public Claw(HardwareMap hardwareMap){
-        rightClaw = hardwareMap.servo.get("rightClaw");
-        leftClaw = hardwareMap.servo.get("leftClaw");
+    public Wrist(HardwareMap hardwareMap){
+        wrist = hardwareMap.servo.get("wrist");
         //arm.setDirection(Servo.Direction.REVERSE);   //do we need to reverse this???
-        rightClaw.setPosition(0.51);
-        leftClaw.setPosition(0.62);
+        wrist.setPosition(0.98);
     }
 
     public void releaseOne() {
@@ -34,14 +32,10 @@ public class Claw {
     }
 
     public void closeClaw() {
-
+        wrist.setPosition(0);
     }
 
-    public Servo getRightClaw() {
-        return rightClaw;
-    }
-
-    public Servo getLeftClaw() {
-        return leftClaw;
+    public Servo getWrist() {
+        return wrist;
     }
 }

@@ -25,13 +25,14 @@ public abstract class BaseOp extends OpMode {
 
 
 
-    public static double travelingPos = 0.51, intakingPos=0.49, depositingPos=0.66;
-
-    public static double clawClosePos = 0.12, clawReleaseOnePos = 0.35, clawReleaseTwoPos = 0.5, clawIntakePos = 0.35;
-
-    public boolean driverCanControl = false, operatorCanControl = true;
-
+    public static double armTransition = 0.5, armShortDeposit = 0.68, armIntaking = 0.99;
+    public static double wristShortDeposit = 0.53, wristIntaking = 0.64, wristTransition = 0.53;
+    public static double rightClawClose = 0.51, rightClawOpen = 0.58;
+    public static double leftClawClose = 0.62, leftClawOpen = 0.54;
     public static double planeHoldPos = 0.0, planeReleasePos = 1.0;
+    public static boolean doClose = false;
+
+    private ElapsedTime timer = new ElapsedTime();
 
 
 
@@ -130,97 +131,72 @@ public abstract class BaseOp extends OpMode {
             bot = new Robot(hardwareMap, telemetry);
         }
 
-        if (driver.wasJustPressed(Button.A)) {            //uhhh no idea what this does
+        /*if (driver.wasJustPressed(Button.A)) {            //uhhh no idea what this does
             tilt = !tilt;
             recess = !recess;
-        }
+        }*/
 
-        if (driver.wasJustPressed(Button.LEFT_BUMPER)) {        //switch between FC and RC
-            bot.drivetrain.switchModes();
-        }
-
-        if (driver.isDown(Button.X)) {
-            driverCanControl=true;
-            operatorCanControl=false;
-            bot.intake.getLeftBrush().setPosition(0.5);
-            bot.intake.getRightBrush().setPosition(0.5);
-            bot.intake.getLeftLift().setPosition(0.6);
-            bot.intake.getRightLift().setPosition(0.4);
-            bot.claw.getClaw().setPosition(clawIntakePos);
-            bot.slide.getSlides().setPower(-1);
-            bot.intake.getCompliant().setPower(1);
-            bot.intake.getCarWash().setPower(1);
-        } else if (driver.isDown(Button.Y)) {
-            bot.intake.getLeftBrush().setPosition(0.5);
-            bot.intake.getRightBrush().setPosition(0.5);
-            bot.intake.getLeftLift().setPosition(0.6);
-            bot.intake.getRightLift().setPosition(0.4);
-            bot.claw.getClaw().setPosition(clawIntakePos);
-            bot.intake.getCompliant().setPower(-1);
-            bot.intake.getCarWash().setPower(-1);
-        } else if(driver.isDown(Button.A)) {
-            bot.intake.getLeftBrush().setPosition(1.0);
-            bot.intake.getRightBrush().setPosition(0.0);
-        } else {
-            bot.intake.getLeftBrush().setPosition(0.6);
-            bot.intake.getRightBrush().setPosition(0.4);
-            bot.intake.getLeftLift().setPosition(0.4);
-            bot.intake.getRightLift().setPosition(0.6);
-            if(driverCanControl) {bot.claw.getClaw().setPosition(clawClosePos);}
-            if(driverCanControl) {bot.slide.getSlides().setPower(0); }
-            bot.intake.getCompliant().setPower(0);
-            bot.intake.getCarWash().setPower(0);
-            driverCanControl = false;
-            operatorCanControl=true;
-        }
+        //if right bumper, put the arm thingy down and then the wrist up, and open the claws
 
         // ---------------------------- OPERATOR CODE ---------------------------- //
 
+        //if dpad up slides go up
+        //if dpad down slides go down
+
+        //
+        //
+
+        if(operator.wasJustPressed(Button.B)) {                          //INTAKING
+            bot.arm.getArm().setPosition(armIntaking);
+            bot.wrist.getWrist().setPosition(wristIntaking);
+            timer.reset();
+            while(timer.milliseconds()<1000) {}
+            bot.claw.getLeftClaw().setPosition(leftClawOpen);
+            bot.claw.getRightClaw().setPosition(rightClawOpen);
+            doClose = true;
+        } else if(operator.wasJustPressed(Button.X)) {                  //SHORT DEPOSIT
+            bot.arm.getArm().setPosition(armShortDeposit);
+            bot.wrist.getWrist().setPosition(wristShortDeposit);
+            doClose = false;
+        } else if(operator.wasJustReleased(Button.B) || operator.wasJustReleased(Button.X)) {                                                //TRANSITION
+            if(doClose) {
+                bot.claw.getRightClaw().setPosition(rightClawClose);
+                bot.claw.getLeftClaw().setPosition(leftClawClose);
+            } else {
+                bot.claw.getRightClaw().setPosition(rightClawOpen);
+                bot.claw.getLeftClaw().setPosition(leftClawOpen);
+            }
+            timer.reset();
+            while(timer.milliseconds()<500) {}
+            bot.arm.getArm().setPosition(armTransition);
+            bot.wrist.getWrist().setPosition(wristTransition);
+        }
+
+        if(operator.isDown(Button.RIGHT_BUMPER)) {                          //SLIDES UP
+            bot.slides.slidesManualUp();
+        } else if(operator.isDown(Button.LEFT_BUMPER)) {                    //SLIDES DOWN
+            //bot.slides.getRightSlide().setPower(-1);
+            //bot.slides.getLeftSlide().setPower(-1);
+            bot.slides.slidesManualDown();
+        } else {                                                                    //STOP SLIDES
+            bot.slides.holdSlides();
+        }
 
 
 
-        if (operator.wasJustPressed(Button.DPAD_UP)) {
+
+
+
+
+        /*if (operator.wasJustPressed(Button.DPAD_UP)) {
             bot.plane.getPlane().setPosition(planeHoldPos);
         } else if (operator.wasJustPressed(Button.DPAD_DOWN)) {
             bot.plane.getPlane().setPosition(planeReleasePos);
-        }
-
-
-
-
-        if(operator.wasJustPressed(Button.B)) {
-            bot.claw.getClaw().setPosition(clawClosePos);
-        } else if (operator.wasJustPressed(Button.A)) {
-            bot.claw.getClaw().setPosition(clawReleaseOnePos);
-        } else if (operator.wasJustPressed(Button.X)) {
-            bot.claw.getClaw().setPosition(clawReleaseTwoPos);
-        }
-
-        if (operator.isDown(Button.RIGHT_BUMPER)) {
-            if(operatorCanControl) {
-                bot.slide.slidesManualUp(bot.arm);
-                bot.claw.getClaw().setPosition(0.12);
-            }
-            //if(operatorCanControl && bot.slide.getPosition()<500) {bot.slide.getSlides().setPower(1);}
-        } else if (operator.isDown(Button.LEFT_BUMPER)) {
-            bot.slide.slidesManualDown(bot.arm);
-            bot.claw.getClaw().setPosition(0.12);
-        } else { bot.slide.getSlides().setPower(0); }
-
-        telemetry.addLine("Slide Position" + bot.slide.getPosition());
-        telemetry.update();
-
-
-        /*if (operator.isDown(Button.X)) {
-            bot.intake.getCompliant().setPower(1);
-            bot.intake.getCarWash().setPower(1);
-        } else if (operator.isDown(Button.Y)) {
-            bot.intake.getCompliant().setPower(-1);
-            bot.intake.getCarWash().setPower(-1);
-        } else {
-            bot.intake.getCompliant().setPower(0);
-            bot.intake.getCarWash().setPower(0);
         }*/
+
+        telemetry.addLine("Left Slide Position: " + bot.slides.getLeftPosition());
+        telemetry.addLine("Right Slide Position: " + bot.slides.getRightPosition());
+        telemetry.update();
 
     }
     @Override

@@ -27,11 +27,15 @@ public abstract class ConstraintTest extends OpMode {
 
     public static double travelingPos = 0.51, intakingPos=0.49, depositingPos=0.66;
 
-    public static double clawClosePos = 0.12, clawReleaseOnePos = 0.35, clawReleaseTwoPos = 0.5, clawIntakePos = 0.35;
+    public static double clawClosePos = 0.21, clawReleaseOnePos = 0.32, clawReleaseTwoPos = 0.5, clawIntakePos = 0.35;
+    public static double pixelHoldingPos = 0.8, pixelReleasePos = 0.5;
+
 
     public boolean driverCanControl = false, operatorCanControl = true;
 
     public static double planeHoldPos = 0.0, planeReleasePos = 1.0;
+
+    public static double leftLiftPos = 0.56, rightLiftPos = 0.44, leftBrushPos = 0.51, rightBrushPos = 0.49;
 
 
 
@@ -137,42 +141,9 @@ public abstract class ConstraintTest extends OpMode {
 
         if (driver.wasJustPressed(Button.LEFT_BUMPER)) {        //switch between FC and RC
             bot.drivetrain.switchModes();
+            bot.drivetrain.reverse();
         }
 
-        if (driver.isDown(Button.X)) {
-            driverCanControl=true;
-            operatorCanControl=false;
-            bot.intake.getLeftBrush().setPosition(0.5);
-            bot.intake.getRightBrush().setPosition(0.5);
-            bot.intake.getLeftLift().setPosition(0.6);
-            bot.intake.getRightLift().setPosition(0.4);
-            bot.claw.getClaw().setPosition(clawIntakePos);
-            bot.slide.getSlides().setPower(-1);
-            bot.intake.getCompliant().setPower(1);
-            bot.intake.getCarWash().setPower(1);
-        } else if (driver.isDown(Button.Y)) {
-            bot.intake.getLeftBrush().setPosition(0.5);
-            bot.intake.getRightBrush().setPosition(0.5);
-            bot.intake.getLeftLift().setPosition(0.6);
-            bot.intake.getRightLift().setPosition(0.4);
-            bot.claw.getClaw().setPosition(clawIntakePos);
-            bot.intake.getCompliant().setPower(-1);
-            bot.intake.getCarWash().setPower(-1);
-        } else if(driver.isDown(Button.A)) {
-            bot.intake.getLeftBrush().setPosition(1.0);
-            bot.intake.getRightBrush().setPosition(0.0);
-        } else {
-            bot.intake.getLeftBrush().setPosition(0.6);
-            bot.intake.getRightBrush().setPosition(0.4);
-            bot.intake.getLeftLift().setPosition(0.4);
-            bot.intake.getRightLift().setPosition(0.6);
-            if(driverCanControl) {bot.claw.getClaw().setPosition(clawClosePos);}
-            if(driverCanControl) {bot.slide.getSlides().setPower(0); }
-            bot.intake.getCompliant().setPower(0);
-            bot.intake.getCarWash().setPower(0);
-            driverCanControl = false;
-            operatorCanControl=true;
-        }
 
         // ---------------------------- OPERATOR CODE ---------------------------- //
 
@@ -185,29 +156,7 @@ public abstract class ConstraintTest extends OpMode {
             bot.plane.getPlane().setPosition(planeReleasePos);
         }
 
-
-
-
-        if(operator.wasJustPressed(Button.B)) {
-            bot.claw.getClaw().setPosition(clawClosePos);
-        } else if (operator.wasJustPressed(Button.A)) {
-            bot.claw.getClaw().setPosition(clawReleaseOnePos);
-        } else if (operator.wasJustPressed(Button.X)) {
-            bot.claw.getClaw().setPosition(clawReleaseTwoPos);
-        }
-
-            if (operator.isDown(Button.RIGHT_BUMPER)) {
-                if(operatorCanControl) {
-                    bot.slide.slidesManualUp(bot.arm);
-                    bot.claw.getClaw().setPosition(0.12);
-                }
-                //if(operatorCanControl && bot.slide.getPosition()<500) {bot.slide.getSlides().setPower(1);}
-            } else if (operator.isDown(Button.LEFT_BUMPER)) {
-                bot.slide.slidesManualDown(bot.arm);
-                bot.claw.getClaw().setPosition(0.12);
-            } else { bot.slide.getSlides().setPower(0); }
-
-            telemetry.addLine("Slide Position" + bot.slide.getPosition());
+            //telemetry.addLine("Slide Position" + bot.sslide.getPosition());
             telemetry.update();
 
 

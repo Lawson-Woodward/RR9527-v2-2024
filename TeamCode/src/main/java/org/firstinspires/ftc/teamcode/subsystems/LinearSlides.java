@@ -8,61 +8,59 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 
 public class LinearSlides {
-    private DcMotorEx spool;
+    private DcMotorEx leftSlide, rightSlide;
     private double speed = 1;
     int ground, minExtend = 800, maxExtend = 1200, baseExtend = 1000;
 
     public LinearSlides(HardwareMap hardwareMap) {
-        spool = (DcMotorEx) hardwareMap.dcMotor.get("spool");
-        spool.setDirection(DcMotorEx.Direction.REVERSE);
-        spool.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        spool.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        spool.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        spool.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        //actuator.setTargetPosition(ground);
-        spool.setPower(0);
+        leftSlide = (DcMotorEx) hardwareMap.dcMotor.get("leftSlide");
+        rightSlide = (DcMotorEx) hardwareMap.dcMotor.get("rightSlide");
+        rightSlide.setDirection(DcMotorEx.Direction.REVERSE);
+        //rightSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        //leftSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        leftSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightSlide.setPower(0.0);
+        leftSlide.setPower(0.0);
     }
 
-    /*public void setPosition(State state) {
-        switch (state) {
-            case GROUND:
-                actuator.setTargetPosition(ground);
-            case DEPOSITING:
-                actuator.setTargetPosition(baseExtend);
-        }
-    }*/
-
-
-    public void slidesManualUp(Arm arm) {
-        spool.setPower(-1);
-        if(getPosition()<800) {
-            arm.getArm().setPosition(0.49);
-        }
-        if(getPosition()>800) {
-            arm.getArm().setPosition(0.66);
-        }
+    public void slidesManualUp() {
+        rightSlide.setPower(1);
+        leftSlide.setPower(1);
     }
 
-    public void slidesManualDown(Arm arm) {
-        spool.setPower(1);
-        if(getPosition()<800) {
-            arm.getArm().setPosition(0.49);
-        }
-        if(getPosition()>800) {
-            arm.getArm().setPosition(0.66);
-        }
+    public void slidesManualDown() {
+        rightSlide.setPower(-1);
+        leftSlide.setPower(-1);
     }
 
-    public int getPosition() {
-        return spool.getCurrentPosition();
+    public void holdSlides() {
+        rightSlide.setPower(0.0);
+        leftSlide.setPower(0.0);
     }
 
-    public void setPower(double power) {
-        spool.setPower(power);
+    public int getLeftPosition() {
+        return leftSlide.getCurrentPosition();
     }
 
-    public DcMotorEx getSlides(){
-        return spool;
+    public int getRightPosition() {
+        return rightSlide.getCurrentPosition();
+    }
+
+    public void setRightSlidePower(double power) {
+        rightSlide.setPower(power);
+    }
+
+    public void setLeftSlidePower(double power) {
+        leftSlide.setPower(power);
+    }
+
+    public DcMotorEx getRightSlide() {
+        return rightSlide;
+    }
+
+    public DcMotorEx getLeftSlide() {
+        return leftSlide;
     }
 }
 

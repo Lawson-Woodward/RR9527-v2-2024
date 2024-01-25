@@ -132,64 +132,7 @@ public abstract class LogicTest extends OpMode {
 
         // ---------------------------- OPERATOR CODE ---------------------------- //
 
-        //actuator code
-        if(operator.isDown(Button.DPAD_UP)) {
-            bot.actuator.moveUp();
-            bot.actuator.canGoDown(false);
-        } else if(operator.isDown(Button.DPAD_DOWN)) {
-            bot.actuator.canGoDown(true);
-            bot.actuator.moveDown();
-            bot.actuator.canGoDown(false);
-        } else {
-            bot.actuator.getActuator().setPower(0);
-        } telemetry.addLine("Actuator Position: " + bot.actuator.getActuator().getCurrentPosition());
-
-        //intake/deposit logic
-        if(operator.wasJustPressed(Button.RIGHT_BUMPER)) {
-            bot.claw.closeClaw();
-            if(bot.slide.getSlides().getCurrentPosition()<-1000) {  //change  later
-                bot.arm.deposit();
-            } else {
-                bot.arm.traveling();
-            }
-            bot.slide.slidesManualUp(bot.arm);
-            bot.actuator.canGoDown(true);
-            //TO ACTUALLY DEPOSIT USE A DIFFERENT BUTTON (press twice)
-            //need to HOLD this button down during deposit or it will reset
-        } else {
-            bot.slide.slidesManualDown(bot.arm);
-            bot.actuator.moveDown();
-            if(bot.slide.getSlides().getCurrentPosition()<-20) {
-                bot.arm.traveling();
-            } else {
-                bot.arm.intake();
-            }
-        }
-
-        //claw deposit code
-        if(operator.wasJustPressed(Button.A)) {
-            bot.claw.releaseOne();
-        } else if(operator.wasJustPressed(Button.B)) {
-            bot.claw.releaseTwo();
-        }
-
-        //intake logic
-        if(operator.wasJustPressed(Button.LEFT_BUMPER)) {
-            bot.claw.releaseTwo();
-            bot.intake.intaking();
-        } else {
-            bot.claw.closeClaw();
-            bot.intake.resting();
-        }
-
-        if(operator.wasJustPressed(Button.X)) {
-            bot.intake.initIntake();
-        }
-
-        telemetry.addLine("Claw Position: " + bot.claw.getClaw().getPosition());
-        telemetry.addLine("Arm Position: " + bot.arm.getArm().getPosition());
-
-        telemetry.addLine("Slides Position: " + bot.slide.getSlides().getCurrentPosition());
+        //telemetry.addLine("Slides Position: " + bot.slides.getSlides().getCurrentPosition());
         telemetry.update();
 
         /*telemetry.addData("currentPos: ",currentPosition);
