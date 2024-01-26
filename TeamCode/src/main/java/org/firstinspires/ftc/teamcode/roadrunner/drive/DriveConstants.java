@@ -56,7 +56,7 @@ public class DriveConstants {
      */
     public static double kV = 0.016;
     public static double kA = 0.003;
-    public static double kStatic = 0.01;
+    public static double kStatic = 0.01; // "yayyyyyyy" - first sign of life in roadrunner 1/25/2024 at exactly 6:00 P.M.
 
     /*
      * These values are used to generate the trajectories for you robot. To ensure proper operation,
