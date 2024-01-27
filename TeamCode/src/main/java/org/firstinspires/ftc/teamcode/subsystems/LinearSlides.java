@@ -25,13 +25,13 @@ public class LinearSlides {
     }
 
     public void slidesManualUp() {
-        rightSlide.setPower(1);
-        leftSlide.setPower(1);
+        rightSlide.setPower(-1);
+        leftSlide.setPower(-1);
     }
 
     public void slidesManualDown() {
-        rightSlide.setPower(-1);
-        leftSlide.setPower(-1);
+        rightSlide.setPower(1);
+        leftSlide.setPower(1);
     }
 
     public void holdSlides() {

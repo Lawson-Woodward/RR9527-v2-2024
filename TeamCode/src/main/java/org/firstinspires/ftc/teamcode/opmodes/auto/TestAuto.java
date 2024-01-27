@@ -46,7 +46,7 @@ public abstract class TestAuto extends LinearOpMode {
     private DcMotorEx leftFront, leftRear, rightRear, rightFront;
     private Servo pixelHolder;
 
-    //april tag shit
+
 
 
     static final double FEET_PER_METER = 3.28084;

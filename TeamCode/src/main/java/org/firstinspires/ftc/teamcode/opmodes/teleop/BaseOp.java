@@ -30,9 +30,13 @@ public abstract class BaseOp extends OpMode {
     public static double rightClawClose = 0.51, rightClawOpen = 0.58;
     public static double leftClawClose = 0.62, leftClawOpen = 0.54;
     public static double planeHoldPos = 0.0, planeReleasePos = 1.0;
+    public static double leftClampOpen = 0.5, leftClampClosed = 0.4;
+    public static double rightClampOpen = 0.5, rightClampClosed = 0.58;
+    public static double depositResting = 0.55, transition = 0.6, extake = 0.28;
+
     public static boolean doClose = false;
 
-    private ElapsedTime timer = new ElapsedTime();
+    private ElapsedTime teleTimer = new ElapsedTime();
 
 
 
@@ -66,7 +70,9 @@ public abstract class BaseOp extends OpMode {
 
         setAlliance();
 
-        bot = new Robot(hardwareMap, telemetry);
+        driver = new GamepadEx(gamepad1);   // drives the drivetrain
+        operator = new GamepadEx(gamepad2); // controls the scoring systems
+        bot = new Robot(hardwareMap, telemetry, driver, operator);
         loop = 0;
 
         voltageReader = new VoltageReader(hardwareMap);
@@ -78,13 +84,12 @@ public abstract class BaseOp extends OpMode {
         tilt = true;
         recess = true;
 
-        driver = new GamepadEx(gamepad1);   // drives the drivetrain
-        operator = new GamepadEx(gamepad2); // controls the scoring systems
         runtime = new ElapsedTime();
 
         telemetry.addLine("Status: Initialized");
         telemetry.addLine("Alliance: " + allianceToString());
         telemetry.update();
+        bot.setState(State.START);
     }
 
     @Override
@@ -121,7 +126,7 @@ public abstract class BaseOp extends OpMode {
         }
 
         if (driver.isDown(Button.RIGHT_BUMPER)) {
-            desiredSpeed *= 0.25;
+            desiredSpeed *= 0.4;
         }
 
         if (driver.isDown(Button.LEFT_BUMPER)) {
@@ -132,7 +137,7 @@ public abstract class BaseOp extends OpMode {
 
 
         if (driver.wasJustPressed(Button.DPAD_RIGHT)) {   //RESET BOT
-            bot = new Robot(hardwareMap, telemetry);
+            bot = new Robot(hardwareMap, telemetry, driver, operator);
         }
 
         /*if (driver.wasJustPressed(Button.A)) {            //uhhh no idea what this does
@@ -144,13 +149,36 @@ public abstract class BaseOp extends OpMode {
 
         // ---------------------------- OPERATOR CODE ---------------------------- //
 
-        //if dpad up slides go up
-        //if dpad down slides go down
 
-        //
-        //
+        bot.executeTele();
+        if(operator.isDown(Button.B)) {
+            teleTimer.reset();
+            bot.setState(State.INTAKE);
+        }
+        if(operator.isDown(Button.X)) {
+            teleTimer.reset();
+            bot.setState(State.SHORT_DEPOSIT);
+        }
 
-        if(operator.wasJustPressed(Button.B)) {                          //INTAKING
+
+        if(operator.isDown(Button.RIGHT_BUMPER)) {                          //SLIDES UP
+            bot.setState(State.EXTEND);
+        }
+        if(operator.isDown(Button.LEFT_BUMPER)) {                    //SLIDES DOWN
+            bot.setState(State.RETURNING);
+        } else {                                                                    //STOP SLIDES
+            //bot.slides.holdSlides();
+        }
+
+        if (operator.wasJustPressed(Button.DPAD_UP)) {
+            bot.plane.getPlane().setPosition(planeHoldPos);
+        } else if (operator.wasJustPressed(Button.DPAD_DOWN)) {
+            bot.plane.getPlane().setPosition(planeReleasePos);
+        }
+
+
+
+        /*if(operator.wasJustPressed(Button.B)) {                          //INTAKING
             bot.intake.intakeManualOut();
             timer.reset();
             while (timer.milliseconds()<1000) {}
@@ -183,6 +211,10 @@ public abstract class BaseOp extends OpMode {
             while(timer.milliseconds()<500) {}
             bot.arm.getArm().setPosition(armTransition);
             bot.wrist.getWrist().setPosition(wristTransition);
+            bot.claw.getRightClaw().setPosition(rightClawClose);
+            bot.claw.getLeftClaw().setPosition(leftClawClose);
+            timer.reset();
+            while(timer.milliseconds()<500) {}
             bot.intake.intakeManualIn();
             timer.reset();
             while(timer.milliseconds()<1000) {}
@@ -205,7 +237,7 @@ public abstract class BaseOp extends OpMode {
             bot.intake.intakeManualOut();
         } else {
             bot.intake.holdIntake();
-        }
+        }*/
 
 
 
@@ -221,6 +253,8 @@ public abstract class BaseOp extends OpMode {
 
         telemetry.addLine("Left Slide Position: " + bot.slides.getLeftPosition());
         telemetry.addLine("Right Slide Position: " + bot.slides.getRightPosition());
+        telemetry.addLine("STATE: " + bot.getState());
+        telemetry.addLine("is B down: " + operator.isDown(Button.B));
         telemetry.update();
 
     }

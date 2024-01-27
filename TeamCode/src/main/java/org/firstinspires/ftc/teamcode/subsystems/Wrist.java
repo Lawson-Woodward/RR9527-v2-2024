@@ -21,18 +21,16 @@ public class Wrist {
         wrist.setPosition(0.73);
     }
 
-    public void releaseOne() {
-        //SLIGHTLY open the claw, just to let the first pixel out
-        //claw.setPosition(0.01);    //a little bit more than 0
+    public void intake() {
+        wrist.setPosition(0.64); //this is the resting position
     }
 
-    public void releaseTwo() {
-        //COMPLETELY open the claw, even if there are two in the outtake at once
-        //claw.setPosition(0.02);    //quite a bit more than 0
+    public void transition() {
+        wrist.setPosition(0.73); //a tiny bit up while traveling to avoid getting stuck
     }
 
-    public void closeClaw() {
-        wrist.setPosition(0);
+    public void shortDeposit() {
+        wrist.setPosition(0.53); //all the way down to depositing position; should be PARALLEL TO BACKDROP
     }
 
     public Servo getWrist() {

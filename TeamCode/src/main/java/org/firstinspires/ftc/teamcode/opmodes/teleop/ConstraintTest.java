@@ -25,17 +25,16 @@ public abstract class ConstraintTest extends OpMode {
 
 
 
-    public static double travelingPos = 0.51, intakingPos=0.49, depositingPos=0.66;
-
-    public static double clawClosePos = 0.21, clawReleaseOnePos = 0.32, clawReleaseTwoPos = 0.5, clawIntakePos = 0.35;
-    public static double pixelHoldingPos = 0.8, pixelReleasePos = 0.5;
-
-
-    public boolean driverCanControl = false, operatorCanControl = true;
-
+    public static double armTransition = 0.52, armShortDeposit = 0.68, armIntaking = 0.99;
+    public static double _rightClampPos = 0.5, _leftClampPos = 0.5, _depositPos = 0.5;
+    public static double wristShortDeposit = 0.53, wristIntaking = 0.64, wristTransition = 0.73;
+    public static double rightClawClose = 0.51, rightClawOpen = 0.58;
+    public static double leftClawClose = 0.62, leftClawOpen = 0.54;
+    public static double leftClawLoose = 0.62, rightClawLoose = 0.51;
     public static double planeHoldPos = 0.0, planeReleasePos = 1.0;
+    public static boolean doClose = false;
 
-    public static double leftLiftPos = 0.56, rightLiftPos = 0.44, leftBrushPos = 0.51, rightBrushPos = 0.49;
+    private ElapsedTime timer = new ElapsedTime();
 
 
 
@@ -127,6 +126,10 @@ public abstract class ConstraintTest extends OpMode {
             desiredSpeed *= 0.25;
         }
 
+        if (driver.isDown(Button.LEFT_BUMPER)) {
+            bot.drivetrain.switchModes();
+        }
+
         bot.drivetrain.setSpeed(desiredSpeed);
 
 
@@ -134,44 +137,51 @@ public abstract class ConstraintTest extends OpMode {
             bot = new Robot(hardwareMap, telemetry);
         }
 
-        if (driver.wasJustPressed(Button.A)) {            //uhhh no idea what this does
+        /*if (driver.wasJustPressed(Button.A)) {            //uhhh no idea what this does
             tilt = !tilt;
             recess = !recess;
-        }
+        }*/
 
-        if (driver.wasJustPressed(Button.LEFT_BUMPER)) {        //switch between FC and RC
-            bot.drivetrain.switchModes();
-            bot.drivetrain.reverse();
-        }
-
+        //if right bumper, put the arm thingy down and then the wrist up, and open the claws
 
         // ---------------------------- OPERATOR CODE ---------------------------- //
 
+        //if dpad up slides go up
+        //if dpad down slides go down
+
+        if(operator.wasJustPressed(Button.A)) {
+            bot.deposit.getRightClamp().setPosition(_rightClampPos);
+        } else if(operator.wasJustPressed(Button.B)) {
+            bot.deposit.getLeftClamp().setPosition(_leftClampPos);
+        } else if(operator.wasJustPressed(Button.X)) {
+            bot.deposit.getDeposit().setPosition(_depositPos);
+        }
+
+        if(operator.wasJustPressed(Button.DPAD_LEFT)) {
+            bot.claw.getLeftClaw().setPosition(leftClawClose);
+        } else if(operator.wasJustPressed(Button.DPAD_RIGHT)) {
+            bot.claw.getRightClaw().setPosition(rightClawClose);
+        }
 
 
 
-        if (operator.wasJustPressed(Button.DPAD_UP)) {
+
+
+
+
+
+
+        /*if (operator.wasJustPressed(Button.DPAD_UP)) {
             bot.plane.getPlane().setPosition(planeHoldPos);
         } else if (operator.wasJustPressed(Button.DPAD_DOWN)) {
             bot.plane.getPlane().setPosition(planeReleasePos);
-        }
-
-            //telemetry.addLine("Slide Position" + bot.sslide.getPosition());
-            telemetry.update();
-
-
-        /*if (operator.isDown(Button.X)) {
-            bot.intake.getCompliant().setPower(1);
-            bot.intake.getCarWash().setPower(1);
-        } else if (operator.isDown(Button.Y)) {
-            bot.intake.getCompliant().setPower(-1);
-            bot.intake.getCarWash().setPower(-1);
-        } else {
-            bot.intake.getCompliant().setPower(0);
-            bot.intake.getCarWash().setPower(0);
         }*/
 
-        }
+        telemetry.addLine("Left Slide Position: " + bot.slides.getLeftPosition());
+        telemetry.addLine("Right Slide Position: " + bot.slides.getRightPosition());
+        telemetry.update();
+
+    }
     @Override
     public void stop() {
         super.stop();

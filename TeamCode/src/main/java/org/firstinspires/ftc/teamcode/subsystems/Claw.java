@@ -23,18 +23,27 @@ public class Claw {
         leftClaw.setPosition(0.62);
     }
 
-    public void releaseOne() {
-        //SLIGHTLY open the claw, just to let the first pixel out
-        //claw.setPosition(0.01);    //a little bit more than 0
+    public void openLeft() {
+        leftClaw.setPosition(0.54);
     }
 
-    public void releaseTwo() {
-        //COMPLETELY open the claw, even if there are two in the outtake at once
-        //claw.setPosition(0.02);    //quite a bit more than 0
+    public void openRight() {
+        rightClaw.setPosition(0.58);
     }
 
-    public void closeClaw() {
+    public void closeRight() {
+        rightClaw.setPosition(0.51);
+    }
 
+    public void closeLeft() {
+        leftClaw.setPosition(0.62);
+    }
+    public void looseRight() {
+        rightClaw.setPosition(0.54);
+    }
+
+    public void looseLeft() {
+        leftClaw.setPosition(0.59);
     }
 
     public Servo getRightClaw() {
