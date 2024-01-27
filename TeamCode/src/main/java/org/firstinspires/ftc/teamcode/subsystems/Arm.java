@@ -17,7 +17,7 @@ public class Arm {
     public Arm(HardwareMap hardwareMap){
         arm = hardwareMap.servo.get("arm");
         //arm.setDirection(Servo.Direction.REVERSE);
-        arm.setPosition(0.5);
+        arm.setPosition(0.52);
     }
 
     public void intake() {

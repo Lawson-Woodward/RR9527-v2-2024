@@ -25,8 +25,8 @@ public abstract class BaseOp extends OpMode {
 
 
 
-    public static double armTransition = 0.5, armShortDeposit = 0.68, armIntaking = 0.99;
-    public static double wristShortDeposit = 0.53, wristIntaking = 0.64, wristTransition = 0.53;
+    public static double armTransition = 0.52, armShortDeposit = 0.68, armIntaking = 0.99;
+    public static double wristShortDeposit = 0.53, wristIntaking = 0.64, wristTransition = 0.73;
     public static double rightClawClose = 0.51, rightClawOpen = 0.58;
     public static double leftClawClose = 0.62, leftClawOpen = 0.54;
     public static double planeHoldPos = 0.0, planeReleasePos = 1.0;
@@ -124,6 +124,10 @@ public abstract class BaseOp extends OpMode {
             desiredSpeed *= 0.25;
         }
 
+        if (driver.isDown(Button.LEFT_BUMPER)) {
+            bot.drivetrain.switchModes();
+        }
+
         bot.drivetrain.setSpeed(desiredSpeed);
 
 
@@ -147,6 +151,10 @@ public abstract class BaseOp extends OpMode {
         //
 
         if(operator.wasJustPressed(Button.B)) {                          //INTAKING
+            bot.intake.intakeManualOut();
+            timer.reset();
+            while (timer.milliseconds()<1000) {}
+            bot.intake.holdIntake();
             bot.arm.getArm().setPosition(armIntaking);
             bot.wrist.getWrist().setPosition(wristIntaking);
             timer.reset();
@@ -154,7 +162,12 @@ public abstract class BaseOp extends OpMode {
             bot.claw.getLeftClaw().setPosition(leftClawOpen);
             bot.claw.getRightClaw().setPosition(rightClawOpen);
             doClose = true;
-        } else if(operator.wasJustPressed(Button.X)) {                  //SHORT DEPOSIT
+        } else if(operator.wasJustPressed(Button.X)) {
+            //SHORT DEPOSIT
+            bot.intake.intakeManualOut();
+            timer.reset();
+            while (timer.milliseconds()<1000) {}
+            bot.intake.holdIntake();
             bot.arm.getArm().setPosition(armShortDeposit);
             bot.wrist.getWrist().setPosition(wristShortDeposit);
             doClose = false;
@@ -170,6 +183,10 @@ public abstract class BaseOp extends OpMode {
             while(timer.milliseconds()<500) {}
             bot.arm.getArm().setPosition(armTransition);
             bot.wrist.getWrist().setPosition(wristTransition);
+            bot.intake.intakeManualIn();
+            timer.reset();
+            while(timer.milliseconds()<1000) {}
+            bot.intake.holdIntake();
         }
 
         if(operator.isDown(Button.RIGHT_BUMPER)) {                          //SLIDES UP
@@ -180,6 +197,14 @@ public abstract class BaseOp extends OpMode {
             bot.slides.slidesManualDown();
         } else {                                                                    //STOP SLIDES
             bot.slides.holdSlides();
+        }
+
+        if(operator.isDown(Button.DPAD_LEFT)) {
+            bot.intake.intakeManualIn();
+        } else if(operator.isDown(Button.DPAD_RIGHT)) {
+            bot.intake.intakeManualOut();
+        } else {
+            bot.intake.holdIntake();
         }
 
 

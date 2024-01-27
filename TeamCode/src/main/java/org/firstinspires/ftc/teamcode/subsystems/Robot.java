@@ -15,6 +15,7 @@ public class Robot {
     public Wrist wrist;
     public Claw claw;
     public LinearSlides slides;
+    public Intake intake;
     private State state;
     public Launcher plane;
     Telemetry telemetry;
@@ -27,6 +28,7 @@ public class Robot {
         wrist = new Wrist(hardwareMap);
         claw = new Claw(hardwareMap);
         slides = new LinearSlides(hardwareMap);
+        intake = new Intake(hardwareMap);
 
         //arm = new Arm(hardwareMap);
         //claw = new Claw(hardwareMap);

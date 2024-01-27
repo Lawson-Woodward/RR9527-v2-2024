@@ -68,7 +68,7 @@ public class Drivetrain implements Subsystem {
 
         switch (mode){
             case FC:
-                heading = Math.toRadians(-imu.getHeading()+180);
+                heading = Math.toRadians(-imu.getHeading());
                 rotX = x * Math.cos(heading) - y * Math.sin(heading);
                 rotY = x * Math.sin(heading) + y * Math.cos(heading);
 

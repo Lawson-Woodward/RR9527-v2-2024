@@ -18,7 +18,7 @@ public class Wrist {
     public Wrist(HardwareMap hardwareMap){
         wrist = hardwareMap.servo.get("wrist");
         //arm.setDirection(Servo.Direction.REVERSE);   //do we need to reverse this???
-        wrist.setPosition(0.98);
+        wrist.setPosition(0.73);
     }
 
     public void releaseOne() {
