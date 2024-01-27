@@ -25,9 +25,9 @@ public class PropDetection extends OpenCvPipeline {
     }
 
     // TOPLEFT anchor point for the bounding box
-    private static Point MIDDLE_ANCHOR_POINT = new Point(95, 210); //the top left points
-    private static Point LEFT_ANCHOR_POINT = new Point(95, 20);    //for each vision box
-    private static Point RIGHT_ANCHOR_POINT = new Point(95, 270);
+    private static Point MIDDLE_ANCHOR_POINT = new Point(110, 210); //the top left points
+    private static Point LEFT_ANCHOR_POINT = new Point(110, 20);    //for each vision box
+    private static Point RIGHT_ANCHOR_POINT = new Point(110, 270);
     private static int COLOR_DIFF = 10000;
 
     // Width and height for the bounding box
@@ -90,7 +90,7 @@ public class PropDetection extends OpenCvPipeline {
         if (midSumColors.val[0] == maxColor &&                                           //if the color is mostly RED out of RED GREEN and BLUE
                 Math.abs(midSumColors.val[0]-midSumColors.val[1]) > COLOR_DIFF &&        //and there is a substantial difference between RED and GREEN/BLUE
                 Math.abs(midSumColors.val[0]-midSumColors.val[2])>COLOR_DIFF) {
-            position = TSEPosition.RIGHT;                                               //TSE is red and on the middle spike
+            position = TSEPosition.MIDDLE;                                               //TSE is red and on the middle spike
             color = TSEColor.RED;
             Imgproc.rectangle(
                     input,
@@ -102,7 +102,7 @@ public class PropDetection extends OpenCvPipeline {
         } else if (midSumColors.val[2] == maxColor &&                                    //if the color is mostly BLUE out of RED GREEN and BLUE
                 Math.abs(midSumColors.val[2]-midSumColors.val[0]) > COLOR_DIFF &&        //and there is a substantial difference between BLUE and GREEN/BLUE
                 Math.abs(midSumColors.val[2]-midSumColors.val[1])>COLOR_DIFF) {
-            position = TSEPosition.RIGHT;                                               //TSE is blue and on the middle spike
+            position = TSEPosition.MIDDLE;                                               //TSE is blue and on the middle spike
             color = TSEColor.BLUE;
             Imgproc.rectangle(
                     input,
@@ -137,7 +137,7 @@ public class PropDetection extends OpenCvPipeline {
 
         // Change the bounding box color based on the sleeve color
         if (leftSumColors.val[0] == maxColor && Math.abs(leftSumColors.val[0]-leftSumColors.val[1]) > COLOR_DIFF && Math.abs(leftSumColors.val[0]-leftSumColors.val[2])>COLOR_DIFF) {
-            position = TSEPosition.MIDDLE;
+            position = TSEPosition.RIGHT;
             color = TSEColor.RED;
             Imgproc.rectangle(
                     input,
@@ -147,7 +147,7 @@ public class PropDetection extends OpenCvPipeline {
                     2
             );
         } else if (leftSumColors.val[2] == maxColor && Math.abs(leftSumColors.val[2]-leftSumColors.val[0]) > COLOR_DIFF && Math.abs(leftSumColors.val[2]-leftSumColors.val[1])>COLOR_DIFF) {
-            position = TSEPosition.MIDDLE;
+            position = TSEPosition.RIGHT;
             color = TSEColor.BLUE;
             Imgproc.rectangle(
                     input,

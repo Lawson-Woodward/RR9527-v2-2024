@@ -11,6 +11,8 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.commands.AprilTagDetectionPipeline;
+import org.openftc.apriltag.AprilTagDetection;
 import org.openftc.easyopencv.*;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -34,6 +36,8 @@ public abstract class TestAuto extends LinearOpMode {
     PropDetection propDetection;
     OpenCvCamera camera;
     String webcamName;
+
+    AprilTagDetectionPipeline detection;
     public static int forward_milliseconds = 2900, turn_milliseconds = 1200, ms1=2500, ms2=1300, ms3=300;
     public static double power = 0.2;
 
@@ -42,7 +46,26 @@ public abstract class TestAuto extends LinearOpMode {
     private DcMotorEx leftFront, leftRear, rightRear, rightFront;
     private Servo pixelHolder;
 
-    @Override
+    //april tag shit
+
+
+    static final double FEET_PER_METER = 3.28084;
+
+    // Lens intrinsics
+    // UNITS ARE PIXELS
+    // NOTE: this calibration is for the C920 webcam at 800x448.
+    // You will need to do your own calibration for other configurations!
+    double fx = 578.272;
+    double fy = 578.272;
+    double cx = 402.145;
+    double cy = 221.506;
+
+    // UNITS ARE METERS
+    double tagsize = 0.166;
+
+    int ID_TAG_OF_INTEREST = 18; // Tag ID 18 from the 36h11 family
+
+    AprilTagDetection tagOfInterest = null;
     public void runOpMode() {
 
         telemetry.addLine("Status: Initializing");
@@ -52,13 +75,32 @@ public abstract class TestAuto extends LinearOpMode {
 
         propDetection = new PropDetection();
 
+        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
+        detection = new AprilTagDetectionPipeline(tagsize, fx, fy, cx, cy);
+
+        camera.setPipeline(detection);
+        camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
+        {
+            @Override
+            public void onOpened()
+            {
+                camera.startStreaming(800,448, OpenCvCameraRotation.UPRIGHT);
+            }
+
+            @Override
+            public void onError(int errorCode)
+            {
+
+            }
+        });
+
+        telemetry.setMsTransmissionInterval(50);
 
         leftFront = hardwareMap.get(DcMotorEx.class, "FL");
         leftRear = hardwareMap.get(DcMotorEx.class, "BL");
         rightRear = hardwareMap.get(DcMotorEx.class, "BR");
         rightFront = hardwareMap.get(DcMotorEx.class, "FR");
-
-        pixelHolder = hardwareMap.servo.get("pixel holder");
 
         build();
 
