@@ -24,7 +24,7 @@ public class Launcher {
     }
 
     public void launch() {
-        airplane.setPosition(0.49); //a tiny bit up while traveling to avoid getting stuck
+        airplane.setPosition(1.0); //a tiny bit up while traveling to avoid getting stuck
     }
 
     public Servo getPlane() {

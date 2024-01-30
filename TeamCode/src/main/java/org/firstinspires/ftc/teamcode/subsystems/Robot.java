@@ -15,7 +15,7 @@ public class Robot {
 
     public Drivetrain drivetrain;
     private static ElapsedTime robotTimer = new ElapsedTime();
-    public boolean doClose = true;
+    public boolean doClose = true, doClamp = true;
     public Arm arm;
     public Wrist wrist;
     public Claw claw;
@@ -40,11 +40,6 @@ public class Robot {
         intake = new Intake(hardwareMap);
         deposit = new Deposit(hardwareMap);
         plane = new Launcher(hardwareMap);
-
-        //arm = new Arm(hardwareMap);
-        //claw = new Claw(hardwareMap);
-        //slides = new LinearSlides(hardwareMap);
-        //plane = new Launcher(hardwareMap);
     }
 
     public Robot(HardwareMap hardwareMap, Telemetry telemetry, GamepadEx drive, GamepadEx op){
@@ -59,6 +54,7 @@ public class Robot {
         deposit = new Deposit(hardwareMap);
         driver = drive;
         operator = op;
+        plane = new Launcher(hardwareMap);
 
         //arm = new Arm(hardwareMap);
         //claw = new Claw(hardwareMap);
@@ -80,20 +76,25 @@ public class Robot {
             case START:
                 break;
             case REST:
-                if(robotTimer.seconds()<0.5) {
-                    if (doClose) {
+                deposit.transitioning();
+                if (doClose) {
                         claw.closeRight();
                         claw.closeLeft();
                     } else {
                         claw.openRight();
                         claw.openLeft();
                     }
-                }
                 if(robotTimer.seconds()>0.5) {
                     arm.transition();
                     wrist.transition();
+                    if (!doClose) {
+                        claw.closeRight();
+                        claw.closeLeft();
+                    }
                     claw.closeRight();
                     claw.closeLeft();
+                    deposit.openLeftClamp();
+                    deposit.openRightClamp();
                     if(robotTimer.seconds()>1.2 && robotTimer.seconds()<1.9) {
                         intake.intakeManualIn();
                     }
@@ -107,15 +108,18 @@ public class Robot {
                 if(robotTimer.seconds()<0.7) {
                     intake.intakeManualOut();
                 }
-                if(robotTimer.seconds()>=0.7) {
+                if(robotTimer.seconds()>=0.7 && robotTimer.seconds()<1.2) {
                     intake.holdIntake();
                     arm.intake();
                     wrist.intake();
+                }
+                if(robotTimer.seconds()>1.7) {
                     claw.openLeft();
                     claw.openRight();
                     doClose = true;
+                    doClamp = true;
                 }
-                if(robotTimer.seconds()>1.2 && operator!=null) {
+                if(robotTimer.seconds()>1.7 && operator!=null) {
                     if(!operator.isDown(GamepadKeys.Button.B)) {
                         state = REST;
                     }
@@ -156,24 +160,47 @@ public class Robot {
                     slides.holdSlides();
                 }
                 break;
-            case DEPOSIT:
 
+            case DEPOSIT:
+                deposit.depositing();
+                if(robotTimer.milliseconds()>700 && operator!=null) {
+                    if(!operator.isDown(GamepadKeys.Button.A)) {
+                        state = RETRACT;
+                        robotTimer.reset();
+                    }
+                }
                 break;
+
+            case RETRACT:
+                doClamp = false;
+                deposit.openRightClamp();
+                deposit.openLeftClamp();
+                deposit.depositing();
+
             case RETURNING:
                 claw.looseLeft();
+
                 claw.looseRight();
-                deposit.transitioning();
-                if(robotTimer.seconds()>0.5 && robotTimer.seconds()<1.0) {
+                if(robotTimer.seconds()>0.5 && robotTimer.seconds()<1.0 && doClamp == true) {
+                    deposit.transitioning();
+                }
+                if(robotTimer.seconds()>1 && robotTimer.seconds()<1.5 && doClamp == true) {
                     deposit.closeLeftClamp();
                     deposit.closeRightClamp();
                 }
-                if(robotTimer.seconds()>1.0 && operator.isDown(GamepadKeys.Button.LEFT_BUMPER)) {
+                if(robotTimer.seconds()>1.5 && operator.isDown(GamepadKeys.Button.LEFT_BUMPER)) {
                     slides.slidesManualDown();
                 }
-                if(robotTimer.seconds()>1.0 && !operator.isDown(GamepadKeys.Button.LEFT_BUMPER)) {
+                if(robotTimer.seconds()>1.5 && !operator.isDown(GamepadKeys.Button.LEFT_BUMPER)) {
                     slides.holdSlides();
                 }
 
+                break;
+            case CLIMB:
+                slides.slidesManualDown();
+                break;
+            case LAUNCH_DRONE:
+                plane.launch();
                 break;
 
         }

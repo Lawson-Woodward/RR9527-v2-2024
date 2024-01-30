@@ -24,11 +24,11 @@ public class Claw {
     }
 
     public void openLeft() {
-        leftClaw.setPosition(0.54);
+        leftClaw.setPosition(0.55);
     }
 
     public void openRight() {
-        rightClaw.setPosition(0.58);
+        rightClaw.setPosition(0.6);
     }
 
     public void closeRight() {
@@ -39,11 +39,11 @@ public class Claw {
         leftClaw.setPosition(0.62);
     }
     public void looseRight() {
-        rightClaw.setPosition(0.54);
+        rightClaw.setPosition(0.555);
     }
 
     public void looseLeft() {
-        leftClaw.setPosition(0.59);
+        leftClaw.setPosition(0.595);
     }
 
     public Servo getRightClaw() {

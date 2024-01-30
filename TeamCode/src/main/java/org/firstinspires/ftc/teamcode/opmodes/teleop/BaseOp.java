@@ -140,6 +140,12 @@ public abstract class BaseOp extends OpMode {
             bot = new Robot(hardwareMap, telemetry, driver, operator);
         }
 
+
+
+        if(driver.wasJustPressed(Button.Y)) {
+            bot.setState(State.CLIMB);
+        }
+
         /*if (driver.wasJustPressed(Button.A)) {            //uhhh no idea what this does
             tilt = !tilt;
             recess = !recess;
@@ -150,6 +156,11 @@ public abstract class BaseOp extends OpMode {
         // ---------------------------- OPERATOR CODE ---------------------------- //
 
 
+        if (driver.wasJustPressed(Button.A)) {
+            bot.plane.getPlane().setPosition(0);
+        } else if (driver.wasJustPressed(Button.B)) {
+            bot.plane.getPlane().setPosition(1);
+        }
         bot.executeTele();
         if(operator.isDown(Button.B)) {
             teleTimer.reset();
@@ -158,6 +169,10 @@ public abstract class BaseOp extends OpMode {
         if(operator.isDown(Button.X)) {
             teleTimer.reset();
             bot.setState(State.SHORT_DEPOSIT);
+        }
+        if(operator.isDown(Button.A)) {
+            teleTimer.reset();
+            bot.setState(State.DEPOSIT);
         }
 
 
@@ -170,11 +185,7 @@ public abstract class BaseOp extends OpMode {
             //bot.slides.holdSlides();
         }
 
-        if (operator.wasJustPressed(Button.DPAD_UP)) {
-            bot.plane.getPlane().setPosition(planeHoldPos);
-        } else if (operator.wasJustPressed(Button.DPAD_DOWN)) {
-            bot.plane.getPlane().setPosition(planeReleasePos);
-        }
+
 
 
 

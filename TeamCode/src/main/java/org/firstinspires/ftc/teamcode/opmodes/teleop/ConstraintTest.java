@@ -150,9 +150,11 @@ public abstract class ConstraintTest extends OpMode {
         //if dpad down slides go down
 
         if(operator.wasJustPressed(Button.A)) {
-            bot.deposit.getRightClamp().setPosition(_rightClampPos);
+            //bot.deposit.getRightClamp().setPosition(_rightClampPos);
+            bot.claw.getLeftClaw().setPosition(_leftClampPos);
         } else if(operator.wasJustPressed(Button.B)) {
-            bot.deposit.getLeftClamp().setPosition(_leftClampPos);
+            //bot.deposit.getLeftClamp().setPosition(_leftClampPos);
+            bot.claw.getRightClaw().setPosition(_rightClampPos);
         } else if(operator.wasJustPressed(Button.X)) {
             bot.deposit.getDeposit().setPosition(_depositPos);
         }
@@ -171,11 +173,11 @@ public abstract class ConstraintTest extends OpMode {
 
 
 
-        /*if (operator.wasJustPressed(Button.DPAD_UP)) {
+        if (operator.wasJustPressed(Button.DPAD_UP)) {
             bot.plane.getPlane().setPosition(planeHoldPos);
         } else if (operator.wasJustPressed(Button.DPAD_DOWN)) {
             bot.plane.getPlane().setPosition(planeReleasePos);
-        }*/
+        }
 
         telemetry.addLine("Left Slide Position: " + bot.slides.getLeftPosition());
         telemetry.addLine("Right Slide Position: " + bot.slides.getRightPosition());
