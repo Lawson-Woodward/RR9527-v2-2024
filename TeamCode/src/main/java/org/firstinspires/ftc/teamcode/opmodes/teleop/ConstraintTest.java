@@ -163,14 +163,9 @@ public abstract class ConstraintTest extends OpMode {
             bot.claw.getLeftClaw().setPosition(leftClawClose);
         } else if(operator.wasJustPressed(Button.DPAD_RIGHT)) {
             bot.claw.getRightClaw().setPosition(rightClawClose);
+        } else if(operator.wasJustPressed(Button.DPAD_UP)) {
+            bot.wrist.getWrist().setPosition(wristTransition);
         }
-
-
-
-
-
-
-
 
 
         if (operator.wasJustPressed(Button.DPAD_UP)) {
@@ -179,8 +174,9 @@ public abstract class ConstraintTest extends OpMode {
             bot.plane.getPlane().setPosition(planeReleasePos);
         }
 
-        telemetry.addLine("Left Slide Position: " + bot.slides.getLeftPosition());
-        telemetry.addLine("Right Slide Position: " + bot.slides.getRightPosition());
+        telemetry.addData("Left slide position: ", bot.slides.getLeftSlide().getCurrentPosition());
+        telemetry.addData("Right slide position: ", bot.slides.getRightSlide().getCurrentPosition());
+        telemetry.addData("Intake motor position: ", bot.intake.getIntake().getCurrentPosition());
         telemetry.update();
 
     }

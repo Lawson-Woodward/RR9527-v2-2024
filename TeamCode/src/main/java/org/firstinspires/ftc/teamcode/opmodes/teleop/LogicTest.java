@@ -17,16 +17,31 @@ import org.firstinspires.ftc.teamcode.commands.State;
 import org.firstinspires.ftc.teamcode.subsystems.Robot;
 
 import org.firstinspires.ftc.teamcode.commands.VoltageReader;
+import org.firstinspires.ftc.teamcode.subsystems.RobotEx;
 
 import java.util.*;
 
 @Config
 public abstract class LogicTest extends OpMode {
 
-    private Robot bot;
+
+
+    public static double armTransition = 0.52, armShortDeposit = 0.68, armIntaking = 0.99;
+    public static double _rightClampPos = 0.5, _leftClampPos = 0.5, _depositPos = 0.5;
+    public static double wristShortDeposit = 0.53, wristIntaking = 0.64, wristTransition = 0.73;
+    public static double rightClawClose = 0.51, rightClawOpen = 0.58;
+    public static double leftClawClose = 0.62, leftClawOpen = 0.54;
+    public static double leftClawLoose = 0.62, rightClawLoose = 0.51;
+    public static double planeHoldPos = 0.0, planeReleasePos = 1.0;
+    public static boolean doClose = false;
+
+    private ElapsedTime timer = new ElapsedTime();
+
+
+
+    private RobotEx bot;
 
     private ElapsedTime runtime;
-    private ElapsedTime timer;
     private GamepadEx driver, operator;
     private VoltageReader voltageReader;
     int alliance;
@@ -54,7 +69,10 @@ public abstract class LogicTest extends OpMode {
 
         setAlliance();
 
-        bot = new Robot(hardwareMap, telemetry);
+        driver = new GamepadEx(gamepad1);   // drives the drivetrain
+        operator = new GamepadEx(gamepad2); // controls the scoring systems
+        bot = new RobotEx(hardwareMap, telemetry, driver, operator);
+
         loop = 0;
 
         voltageReader = new VoltageReader(hardwareMap);
@@ -66,8 +84,6 @@ public abstract class LogicTest extends OpMode {
         tilt = true;
         recess = true;
 
-        driver = new GamepadEx(gamepad1);   // drives the drivetrain
-        operator = new GamepadEx(gamepad2); // controls the scoring systems
         runtime = new ElapsedTime();
 
         telemetry.addLine("Status: Initialized");
@@ -83,7 +99,7 @@ public abstract class LogicTest extends OpMode {
     @Override
     public void loop() {
         multiplier = 1;
-        if(loop++ == 10000) loop = 0;
+        if (loop++ == 10000) loop = 0;
 
         double startTime = System.currentTimeMillis();
 
@@ -96,50 +112,62 @@ public abstract class LogicTest extends OpMode {
 
         bot.drivetrain.drive(driver);
 
-        if(driver.wasJustPressed(Button.Y)) {                                        // DPad Up = Reset Gyro
+        if (driver.wasJustPressed(Button.Y)) {                                        // DPad Up = Reset Gyro
             bot.drivetrain.recenter();
         }
 
-        if(driver.getTrigger(Trigger.LEFT_TRIGGER) > 0.1) {                          // Relative speed by dead zone
+        if (driver.getTrigger(Trigger.LEFT_TRIGGER) > 0.1) {                          // Relative speed by dead zone
             desiredSpeed = (0.7 - driver.getTrigger(Trigger.LEFT_TRIGGER) * 0.4) * multiplier;
-        }
-        else if(driver.getTrigger(Trigger.RIGHT_TRIGGER) > 0.1) {
+        } else if (driver.getTrigger(Trigger.RIGHT_TRIGGER) > 0.1) {
             desiredSpeed = 1 * multiplier;
-        }
-        else {
+        } else {
             desiredSpeed = 0.7 * multiplier;
         }
 
-        if(driver.isDown(Button.RIGHT_BUMPER)) {
+        if (driver.isDown(Button.RIGHT_BUMPER)) {
             desiredSpeed *= 0.25;
+        }
+
+        if (driver.isDown(Button.LEFT_BUMPER)) {
+            bot.drivetrain.switchModes();
         }
 
         bot.drivetrain.setSpeed(desiredSpeed);
 
 
-        if(driver.wasJustPressed(Button.DPAD_RIGHT)){   //RESET BOT
-            bot = new Robot(hardwareMap, telemetry);
+        if (driver.wasJustPressed(Button.DPAD_RIGHT)) {   //RESET BOT
+            bot = new RobotEx(hardwareMap, telemetry, driver, operator);
         }
 
-        if(driver.wasJustPressed(Button.A)){            //uhhh no idea what this does
+        /*if (driver.wasJustPressed(Button.A)) {            //uhhh no idea what this does
             tilt = !tilt;
             recess = !recess;
-        }
+        }*/
 
-        if(driver.wasJustPressed(Button.LEFT_BUMPER)){        //switch between FC and RC
-            bot.drivetrain.switchModes();
-        }
+        //if right bumper, put the arm thingy down and then the wrist up, and open the claws
 
         // ---------------------------- OPERATOR CODE ---------------------------- //
 
-        //telemetry.addLine("Slides Position: " + bot.slides.getSlides().getCurrentPosition());
+        //if dpad up slides go up
+        //if dpad down slides go down
+
+        if(operator.wasJustPressed(Button.A)) {
+            //bot.setState(State.DEPOSIT);
+        } else if(operator.isDown(Button.B)) {
+            bot.setState(State.INTAKE);
+        } else if(operator.isDown(Button.X)) {
+            bot.setState(State.SHORT_DEPOSIT);
+        } else {
+            bot.setState(State.REST);
+        }
+        bot.executeTele();
+
+        telemetry.addData("Left slide position: ", bot.slides.getLeftSlide().getCurrentPosition());
+        telemetry.addData("Right slide position: ", bot.slides.getRightSlide().getCurrentPosition());
+        telemetry.addData("Intake motor position: ", bot.intake.getIntake().getCurrentPosition());
         telemetry.update();
 
-        /*telemetry.addData("currentPos: ",currentPosition);
-        telemetry.addData("power: ", pidOutput);
-        telemetry.addData("slidePrefere: ",slidePreference);*/
     }
-
     @Override
     public void stop() {
         super.stop();

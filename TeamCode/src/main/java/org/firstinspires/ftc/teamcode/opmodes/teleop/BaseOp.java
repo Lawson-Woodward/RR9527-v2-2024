@@ -34,7 +34,6 @@ public abstract class BaseOp extends OpMode {
     public static double rightClampOpen = 0.5, rightClampClosed = 0.58;
     public static double depositResting = 0.55, transition = 0.6, extake = 0.28;
 
-    public static boolean doClose = false;
 
     private ElapsedTime teleTimer = new ElapsedTime();
 
@@ -126,7 +125,7 @@ public abstract class BaseOp extends OpMode {
         }
 
         if (driver.isDown(Button.RIGHT_BUMPER)) {
-            desiredSpeed *= 0.4;
+            desiredSpeed *= 0.5;
         }
 
         if (driver.isDown(Button.LEFT_BUMPER)) {
@@ -141,17 +140,13 @@ public abstract class BaseOp extends OpMode {
         }
 
 
-
-        if(driver.wasJustPressed(Button.Y)) {
+        if (driver.wasJustPressed(Button.A)) {
+            bot.plane.getPlane().setPosition(0);
+        } else if (driver.wasJustPressed(Button.B)) {
+            bot.plane.getPlane().setPosition(1);
+        } else if (driver.wasJustPressed(Button.Y)) {
             bot.setState(State.CLIMB);
         }
-
-        /*if (driver.wasJustPressed(Button.A)) {            //uhhh no idea what this does
-            tilt = !tilt;
-            recess = !recess;
-        }*/
-
-        //if right bumper, put the arm thingy down and then the wrist up, and open the claws
 
         // ---------------------------- OPERATOR CODE ---------------------------- //
 
@@ -160,112 +155,28 @@ public abstract class BaseOp extends OpMode {
             bot.plane.getPlane().setPosition(0);
         } else if (driver.wasJustPressed(Button.B)) {
             bot.plane.getPlane().setPosition(1);
+        } else if (driver.wasJustPressed(Button.Y)) {
+            bot.setState(State.CLIMB);
         }
-        bot.executeTele();
-        if(operator.isDown(Button.B)) {
-            teleTimer.reset();
-            bot.setState(State.INTAKE);
-        }
-        if(operator.isDown(Button.X)) {
-            teleTimer.reset();
-            bot.setState(State.SHORT_DEPOSIT);
-        }
+
         if(operator.isDown(Button.A)) {
-            teleTimer.reset();
             bot.setState(State.DEPOSIT);
-        }
-
-
-        if(operator.isDown(Button.RIGHT_BUMPER)) {                          //SLIDES UP
+        } else if(operator.isDown(Button.B)) {
+            bot.setState(State.INTAKE);
+        } else if(operator.isDown(Button.X)) {
+            bot.setState(State.SHORT_DEPOSIT);
+        } else if(operator.isDown(Button.RIGHT_BUMPER)) {                          //SLIDES UP
             bot.setState(State.EXTEND);
-        }
-        if(operator.isDown(Button.LEFT_BUMPER)) {                    //SLIDES DOWN
+        } else if(operator.isDown(Button.LEFT_BUMPER)) {                    //SLIDES DOWN
             bot.setState(State.RETURNING);
         } else {                                                                    //STOP SLIDES
-            //bot.slides.holdSlides();
+            bot.setState(State.REST);
         }
+        bot.executeTele();
 
-
-
-
-
-        /*if(operator.wasJustPressed(Button.B)) {                          //INTAKING
-            bot.intake.intakeManualOut();
-            timer.reset();
-            while (timer.milliseconds()<1000) {}
-            bot.intake.holdIntake();
-            bot.arm.getArm().setPosition(armIntaking);
-            bot.wrist.getWrist().setPosition(wristIntaking);
-            timer.reset();
-            while(timer.milliseconds()<1000) {}
-            bot.claw.getLeftClaw().setPosition(leftClawOpen);
-            bot.claw.getRightClaw().setPosition(rightClawOpen);
-            doClose = true;
-        } else if(operator.wasJustPressed(Button.X)) {
-            //SHORT DEPOSIT
-            bot.intake.intakeManualOut();
-            timer.reset();
-            while (timer.milliseconds()<1000) {}
-            bot.intake.holdIntake();
-            bot.arm.getArm().setPosition(armShortDeposit);
-            bot.wrist.getWrist().setPosition(wristShortDeposit);
-            doClose = false;
-        } else if(operator.wasJustReleased(Button.B) || operator.wasJustReleased(Button.X)) {                                                //TRANSITION
-            if(doClose) {
-                bot.claw.getRightClaw().setPosition(rightClawClose);
-                bot.claw.getLeftClaw().setPosition(leftClawClose);
-            } else {
-                bot.claw.getRightClaw().setPosition(rightClawOpen);
-                bot.claw.getLeftClaw().setPosition(leftClawOpen);
-            }
-            timer.reset();
-            while(timer.milliseconds()<500) {}
-            bot.arm.getArm().setPosition(armTransition);
-            bot.wrist.getWrist().setPosition(wristTransition);
-            bot.claw.getRightClaw().setPosition(rightClawClose);
-            bot.claw.getLeftClaw().setPosition(leftClawClose);
-            timer.reset();
-            while(timer.milliseconds()<500) {}
-            bot.intake.intakeManualIn();
-            timer.reset();
-            while(timer.milliseconds()<1000) {}
-            bot.intake.holdIntake();
-        }
-
-        if(operator.isDown(Button.RIGHT_BUMPER)) {                          //SLIDES UP
-            bot.slides.slidesManualUp();
-        } else if(operator.isDown(Button.LEFT_BUMPER)) {                    //SLIDES DOWN
-            //bot.slides.getRightSlide().setPower(-1);
-            //bot.slides.getLeftSlide().setPower(-1);
-            bot.slides.slidesManualDown();
-        } else {                                                                    //STOP SLIDES
-            bot.slides.holdSlides();
-        }
-
-        if(operator.isDown(Button.DPAD_LEFT)) {
-            bot.intake.intakeManualIn();
-        } else if(operator.isDown(Button.DPAD_RIGHT)) {
-            bot.intake.intakeManualOut();
-        } else {
-            bot.intake.holdIntake();
-        }*/
-
-
-
-
-
-
-
-        /*if (operator.wasJustPressed(Button.DPAD_UP)) {
-            bot.plane.getPlane().setPosition(planeHoldPos);
-        } else if (operator.wasJustPressed(Button.DPAD_DOWN)) {
-            bot.plane.getPlane().setPosition(planeReleasePos);
-        }*/
-
-        telemetry.addLine("Left Slide Position: " + bot.slides.getLeftPosition());
-        telemetry.addLine("Right Slide Position: " + bot.slides.getRightPosition());
-        telemetry.addLine("STATE: " + bot.getState());
-        telemetry.addLine("is B down: " + operator.isDown(Button.B));
+        telemetry.addData("Left Slide Position: ", bot.slides.getLeftSlide().getCurrentPosition());
+        telemetry.addData("Right Slide Position: ", bot.slides.getRightSlide().getCurrentPosition());
+        telemetry.addData("Intake Motor Position: ", bot.intake.getIntake().getCurrentPosition());
         telemetry.update();
 
     }

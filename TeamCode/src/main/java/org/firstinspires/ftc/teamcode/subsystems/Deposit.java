@@ -20,8 +20,8 @@ public class Deposit {
         leftClamp = hardwareMap.servo.get("leftClamp");
         deposit = hardwareMap.servo.get("deposit");
         //arm.setDirection(Servo.Direction.REVERSE);   //do we need to reverse this??? nahhhh probably not
-        rightClamp.setPosition(0.7);
-        leftClamp.setPosition(0.27);
+        rightClamp.setPosition(0.27);
+        leftClamp.setPosition(0.7);
         deposit.setPosition(0.55);
 
     }
