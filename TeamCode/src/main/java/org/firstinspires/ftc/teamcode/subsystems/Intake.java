@@ -14,9 +14,9 @@ public class Intake {
 
     public Intake(HardwareMap hardwareMap) {
         intake = (DcMotorEx) hardwareMap.dcMotor.get("intake");
+        intake.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        intake.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         intake.setDirection(DcMotorEx.Direction.REVERSE);
-        //rightSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        //leftSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         intake.setPower(0.0);
     }

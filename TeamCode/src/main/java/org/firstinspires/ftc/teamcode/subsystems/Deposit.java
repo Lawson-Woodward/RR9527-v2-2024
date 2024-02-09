@@ -22,7 +22,7 @@ public class Deposit {
         //arm.setDirection(Servo.Direction.REVERSE);   //do we need to reverse this??? nahhhh probably not
         rightClamp.setPosition(0.27);
         leftClamp.setPosition(0.7);
-        deposit.setPosition(0.55);
+        deposit.setPosition(0.88);
 
     }
 
@@ -43,15 +43,15 @@ public class Deposit {
     }
 
     public void depositing() {
-        deposit.setPosition(0.2);
+        deposit.setPosition(0.58);
     }
 
     public void transitioning() {
-        deposit.setPosition(0.55);
+        deposit.setPosition(0.825);
     }
 
     public void readyToClamp() {
-        deposit.setPosition(0.6);
+        deposit.setPosition(0.88);
     }
 
     public Servo getRightClamp() {

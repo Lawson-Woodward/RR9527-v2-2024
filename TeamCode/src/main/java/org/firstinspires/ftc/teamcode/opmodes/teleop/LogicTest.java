@@ -26,6 +26,7 @@ public abstract class LogicTest extends OpMode {
 
 
 
+    public DcMotorEx slideMotor;
     public static double armTransition = 0.52, armShortDeposit = 0.68, armIntaking = 0.99;
     public static double _rightClampPos = 0.5, _leftClampPos = 0.5, _depositPos = 0.5;
     public static double wristShortDeposit = 0.53, wristIntaking = 0.64, wristTransition = 0.73;
@@ -39,7 +40,6 @@ public abstract class LogicTest extends OpMode {
 
 
 
-    private RobotEx bot;
 
     private ElapsedTime runtime;
     private GamepadEx driver, operator;
@@ -63,6 +63,10 @@ public abstract class LogicTest extends OpMode {
     public void init() {
         FtcDashboard dashboard = FtcDashboard.getInstance();
         telemetry = new MultipleTelemetry(telemetry, dashboard.getTelemetry());
+        slideMotor = (DcMotorEx) hardwareMap.dcMotor.get("leftSlide");
+        slideMotor.setDirection(DcMotorEx.Direction.REVERSE);
+        slideMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        slideMotor.setPower(1.0);
 
         telemetry.addLine("Status: Initializing");
         telemetry.update();
@@ -71,7 +75,6 @@ public abstract class LogicTest extends OpMode {
 
         driver = new GamepadEx(gamepad1);   // drives the drivetrain
         operator = new GamepadEx(gamepad2); // controls the scoring systems
-        bot = new RobotEx(hardwareMap, telemetry, driver, operator);
 
         loop = 0;
 
@@ -106,66 +109,16 @@ public abstract class LogicTest extends OpMode {
         // ---------------------------- LOOPING ---------------------------- //
         driver.readButtons();
         operator.readButtons();
+        if(operator.isDown(Button.B)) {
+            slideMotor.setPower(1.0);
+        } else {
+            slideMotor.setPower(0.0);
+        }
 
         // ---------------------------- DRIVER CODE ---------------------------- //
         double desiredSpeed = 0;
 
-        bot.drivetrain.drive(driver);
 
-        if (driver.wasJustPressed(Button.Y)) {                                        // DPad Up = Reset Gyro
-            bot.drivetrain.recenter();
-        }
-
-        if (driver.getTrigger(Trigger.LEFT_TRIGGER) > 0.1) {                          // Relative speed by dead zone
-            desiredSpeed = (0.7 - driver.getTrigger(Trigger.LEFT_TRIGGER) * 0.4) * multiplier;
-        } else if (driver.getTrigger(Trigger.RIGHT_TRIGGER) > 0.1) {
-            desiredSpeed = 1 * multiplier;
-        } else {
-            desiredSpeed = 0.7 * multiplier;
-        }
-
-        if (driver.isDown(Button.RIGHT_BUMPER)) {
-            desiredSpeed *= 0.25;
-        }
-
-        if (driver.isDown(Button.LEFT_BUMPER)) {
-            bot.drivetrain.switchModes();
-        }
-
-        bot.drivetrain.setSpeed(desiredSpeed);
-
-
-        if (driver.wasJustPressed(Button.DPAD_RIGHT)) {   //RESET BOT
-            bot = new RobotEx(hardwareMap, telemetry, driver, operator);
-        }
-
-        /*if (driver.wasJustPressed(Button.A)) {            //uhhh no idea what this does
-            tilt = !tilt;
-            recess = !recess;
-        }*/
-
-        //if right bumper, put the arm thingy down and then the wrist up, and open the claws
-
-        // ---------------------------- OPERATOR CODE ---------------------------- //
-
-        //if dpad up slides go up
-        //if dpad down slides go down
-
-        if(operator.wasJustPressed(Button.A)) {
-            //bot.setState(State.DEPOSIT);
-        } else if(operator.isDown(Button.B)) {
-            bot.setState(State.INTAKE);
-        } else if(operator.isDown(Button.X)) {
-            bot.setState(State.SHORT_DEPOSIT);
-        } else {
-            bot.setState(State.REST);
-        }
-        bot.executeTele();
-
-        telemetry.addData("Left slide position: ", bot.slides.getLeftSlide().getCurrentPosition());
-        telemetry.addData("Right slide position: ", bot.slides.getRightSlide().getCurrentPosition());
-        telemetry.addData("Intake motor position: ", bot.intake.getIntake().getCurrentPosition());
-        telemetry.update();
 
     }
     @Override
@@ -177,7 +130,6 @@ public abstract class LogicTest extends OpMode {
         telemetry.addLine("Runtime: " + runtime.toString());
         telemetry.addLine("Looptime: " + loopTime);
         telemetry.addLine("Multiplier: " + multiplier);
-        telemetry.addData("Mode: ", bot.drivetrain.getMode());
     }
 
     public void hubPowerTelemetry(){

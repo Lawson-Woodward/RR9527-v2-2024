@@ -28,8 +28,8 @@ import java.util.List;
 @Config
 public class StandardTrackingWheelLocalizer extends ThreeTrackingWheelLocalizer {
 
-    public static double X_MULTIPLIER = 1.01189041; // Multiplier in the X direction
-    public static double Y_MULTIPLIER = 1.0162223; // Multiplier in the Y direction
+    public static double X_MULTIPLIER = 1.0090472; // Multiplier in the X direction
+    public static double Y_MULTIPLIER = 1.002352385; // Multiplier in the Y direction
     public static double TICKS_PER_REV = 8192;
     public static double WHEEL_RADIUS = .688975; // in
     public static double GEAR_RATIO = 1; // output (wheel) speed / input (encoder) speed

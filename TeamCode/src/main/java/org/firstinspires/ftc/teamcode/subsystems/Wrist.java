@@ -26,7 +26,7 @@ public class Wrist {
     }
 
     public void transition() {
-        wrist.setPosition(0.7); //a tiny bit up while traveling to avoid getting stuck
+        wrist.setPosition(0.72); //a tiny bit up while traveling to avoid getting stuck
     }
 
     public void shortDeposit() {

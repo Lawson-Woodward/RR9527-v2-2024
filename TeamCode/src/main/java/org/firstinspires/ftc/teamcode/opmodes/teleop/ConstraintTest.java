@@ -25,16 +25,18 @@ public abstract class ConstraintTest extends OpMode {
 
 
 
+    public static double depositing = 0.28;
     public static double armTransition = 0.52, armShortDeposit = 0.68, armIntaking = 0.99;
-    public static double _rightClampPos = 0.5, _leftClampPos = 0.5, _depositPos = 0.5;
     public static double wristShortDeposit = 0.53, wristIntaking = 0.64, wristTransition = 0.73;
-    public static double rightClawClose = 0.51, rightClawOpen = 0.58;
+    public static double rightClawClose = 0.51, rightClawOpen = 0.58, rightClawLoose = 0.3;
     public static double leftClawClose = 0.62, leftClawOpen = 0.54;
-    public static double leftClawLoose = 0.62, rightClawLoose = 0.51;
     public static double planeHoldPos = 0.0, planeReleasePos = 1.0;
-    public static boolean doClose = false;
+    public static double leftClampOpen = 0.5, leftClampClosed = 0.4;
+    public static double rightClampOpen = 0.5, rightClampClosed = 0.58;
+    public static double depositResting = 0.55, transition = 0.6, extake = 0.28;
 
-    private ElapsedTime timer = new ElapsedTime();
+
+    private ElapsedTime teleTimer = new ElapsedTime();
 
 
 
@@ -68,7 +70,9 @@ public abstract class ConstraintTest extends OpMode {
 
         setAlliance();
 
-        bot = new Robot(hardwareMap, telemetry);
+        driver = new GamepadEx(gamepad1);   // drives the drivetrain
+        operator = new GamepadEx(gamepad2); // controls the scoring systems
+        bot = new Robot(hardwareMap, telemetry, driver, operator);
         loop = 0;
 
         voltageReader = new VoltageReader(hardwareMap);
@@ -80,13 +84,12 @@ public abstract class ConstraintTest extends OpMode {
         tilt = true;
         recess = true;
 
-        driver = new GamepadEx(gamepad1);   // drives the drivetrain
-        operator = new GamepadEx(gamepad2); // controls the scoring systems
         runtime = new ElapsedTime();
 
         telemetry.addLine("Status: Initialized");
         telemetry.addLine("Alliance: " + allianceToString());
         telemetry.update();
+        bot.setState(State.START);
     }
 
     @Override
@@ -111,7 +114,8 @@ public abstract class ConstraintTest extends OpMode {
         bot.drivetrain.drive(driver);
 
         if (driver.wasJustPressed(Button.Y)) {                                        // DPad Up = Reset Gyro
-            bot.drivetrain.recenter();
+            //bot.drivetrain.recenter();
+
         }
 
         if (driver.getTrigger(Trigger.LEFT_TRIGGER) > 0.1) {                          // Relative speed by dead zone
@@ -123,7 +127,7 @@ public abstract class ConstraintTest extends OpMode {
         }
 
         if (driver.isDown(Button.RIGHT_BUMPER)) {
-            desiredSpeed *= 0.25;
+            desiredSpeed *= 0.5;
         }
 
         if (driver.isDown(Button.LEFT_BUMPER)) {
@@ -134,49 +138,31 @@ public abstract class ConstraintTest extends OpMode {
 
 
         if (driver.wasJustPressed(Button.DPAD_RIGHT)) {   //RESET BOT
-            bot = new Robot(hardwareMap, telemetry);
+            bot = new Robot(hardwareMap, telemetry, driver, operator);
         }
 
-        /*if (driver.wasJustPressed(Button.A)) {            //uhhh no idea what this does
-            tilt = !tilt;
-            recess = !recess;
-        }*/
 
-        //if right bumper, put the arm thingy down and then the wrist up, and open the claws
+        if (driver.wasJustPressed(Button.A)) {
+            bot.plane.getPlane().setPosition(0);
+        } else if (driver.wasJustPressed(Button.B)) {
+            bot.plane.getPlane().setPosition(1);
+        } else if (driver.wasJustPressed(Button.Y)) {
+            bot.setState(State.CLIMB);
+        }
 
         // ---------------------------- OPERATOR CODE ---------------------------- //
 
-        //if dpad up slides go up
-        //if dpad down slides go down
-
         if(operator.wasJustPressed(Button.A)) {
-            //bot.deposit.getRightClamp().setPosition(_rightClampPos);
-            bot.claw.getLeftClaw().setPosition(_leftClampPos);
-        } else if(operator.wasJustPressed(Button.B)) {
-            //bot.deposit.getLeftClamp().setPosition(_leftClampPos);
-            bot.claw.getRightClaw().setPosition(_rightClampPos);
-        } else if(operator.wasJustPressed(Button.X)) {
-            bot.deposit.getDeposit().setPosition(_depositPos);
-        }
-
-        if(operator.wasJustPressed(Button.DPAD_LEFT)) {
-            bot.claw.getLeftClaw().setPosition(leftClawClose);
-        } else if(operator.wasJustPressed(Button.DPAD_RIGHT)) {
-            bot.claw.getRightClaw().setPosition(rightClawClose);
-        } else if(operator.wasJustPressed(Button.DPAD_UP)) {
-            bot.wrist.getWrist().setPosition(wristTransition);
+            bot.claw.getLeftClaw().setPosition(rightClawLoose);
         }
 
 
-        if (operator.wasJustPressed(Button.DPAD_UP)) {
-            bot.plane.getPlane().setPosition(planeHoldPos);
-        } else if (operator.wasJustPressed(Button.DPAD_DOWN)) {
-            bot.plane.getPlane().setPosition(planeReleasePos);
-        }
 
-        telemetry.addData("Left slide position: ", bot.slides.getLeftSlide().getCurrentPosition());
-        telemetry.addData("Right slide position: ", bot.slides.getRightSlide().getCurrentPosition());
-        telemetry.addData("Intake motor position: ", bot.intake.getIntake().getCurrentPosition());
+
+        //telemetry.addLine("Left Slide Position: " + bot.slides.getLeftPosition());
+        //telemetry.addLine("Right Slide Position: " + bot.slides.getRightPosition());
+        telemetry.addLine("STATE: " + bot.getState());
+        telemetry.addLine("is B down: " + operator.isDown(Button.B));
         telemetry.update();
 
     }

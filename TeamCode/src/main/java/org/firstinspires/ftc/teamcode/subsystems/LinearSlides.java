@@ -15,15 +15,17 @@ public class LinearSlides {
     public LinearSlides(HardwareMap hardwareMap) {
         leftSlide = (DcMotorEx) hardwareMap.dcMotor.get("leftSlide");
         rightSlide = (DcMotorEx) hardwareMap.dcMotor.get("rightSlide");
+        leftSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightSlide.setDirection(DcMotorEx.Direction.REVERSE);
 
-        rightSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        leftSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        //rightSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        //leftSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         leftSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        rightSlide.setPower(0.0);
-        leftSlide.setPower(0.0);
     }
 
     public void slidesManualUp() {

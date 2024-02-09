@@ -1,30 +1,22 @@
 package org.firstinspires.ftc.teamcode.opmodes.auto;
 
-import static org.firstinspires.ftc.teamcode.commands.State.REST;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
-import com.arcrobotics.ftclib.gamepad.GamepadKeys;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.commands.AprilTagDetectionPipeline;
-import org.firstinspires.ftc.teamcode.commands.State;
-import org.openftc.apriltag.AprilTagDetection;
-import org.openftc.easyopencv.*;
+//import org.firstinspires.ftc.teamcode.commands.State;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.commands.PropDetection;
-import org.firstinspires.ftc.teamcode.roadrunner.drive.DriveConstants;
+import org.firstinspires.ftc.teamcode.commands.State;
 import org.firstinspires.ftc.teamcode.roadrunner.drive.SampleMecanumDrive;
-import org.firstinspires.ftc.teamcode.roadrunner.trajectorysequence.TrajectorySequence;
-import org.firstinspires.ftc.teamcode.subsystems.Drivetrain;
 import org.firstinspires.ftc.teamcode.subsystems.Robot;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
@@ -43,13 +35,14 @@ public abstract class BlueLeft extends LinearOpMode {
     public double rightClawClose = 0.51, rightClawOpen = 0.58;
     public double leftClawClose = 0.62, leftClawOpen = 0.54;
     public double planeHoldPos = 0.0, planeReleasePos = 1.0;
-    public boolean doClose = true, doClamp = true;
+    public boolean doClose = false;
 
     public int turnDegrees = 120;
     public int forwardDistance1 = 46;
     public int forwardDistance2 = 87;
 
     Robot bot;
+    SampleMecanumDrive drive;
     Arm arm;
     Intake intake;
     Wrist wrist;
@@ -57,21 +50,28 @@ public abstract class BlueLeft extends LinearOpMode {
     PropDetection propDetection;
     OpenCvCamera camera;
     String webcamName;
-
+    State state;
 
     AprilTagDetectionPipeline detection;
-    public static int forward_milliseconds = 2900, turn_milliseconds = 1200, ms1=2500, ms2=1300, ms3=300;
-    public static double power = 0.2;
+    public static int forward_milliseconds = 2900, turn_milliseconds = 1200, ms1 = 2500, ms2 = 1300, ms3 = 300;
 
-    //placing pixel on marker
-    public static double initialLeft_x = -2;
-    public static double initialLeft_y = 6;
-    public static double initialLeft_angle = 120;
+    //Close red starting pos
+    public static double startX = 12, startY = -64.5, startAngle = 90;
 
-    public static double initialRight_x = 3;
-    public static double initialRight_y = 6;
-    public static double initialRight_angle = 65;
-    public static double initialMiddle = 12;
+    public static double spikeLeft_x = 9;
+    public static double spikeLeft_y = -57.5;
+    public static double spikeLeft_angle = 110;
+
+    public static double spikeRight_x = 15;
+    public static double spikeRight_y = -57.5;
+    public static double spikeRight_angle = 70;
+
+    public static double spikeMiddle_x = 12;
+    public static double spikeMiddle_y = -59.5;
+    public static double spikeMiddle_angle = 90;
+
+    static Pose2d startPose = new Pose2d(startX, startY, Math.toRadians(startAngle));
+
 
     //getting to the board and/or parking
 
@@ -83,27 +83,20 @@ public abstract class BlueLeft extends LinearOpMode {
 
     ElapsedTime timer = new ElapsedTime();
 
-    private DcMotorEx leftFront, leftRear, rightRear, rightFront;
-    private Servo pixelHolder;
-    private State state;
+    //private State state;
 
 
 
-    public void runOpMode() {
+    public void runOpMode() throws InterruptedException {
 
         telemetry.addLine("Status: Initializing");
         telemetry.update();
 
-        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         Robot bot = new Robot(hardwareMap, telemetry);
+        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
 
         propDetection = new PropDetection();
 
-
-        leftFront = hardwareMap.get(DcMotorEx.class, "FL");
-        leftRear = hardwareMap.get(DcMotorEx.class, "BL");
-        rightRear = hardwareMap.get(DcMotorEx.class, "BR");
-        rightFront = hardwareMap.get(DcMotorEx.class, "FR");
 
         build();
 
@@ -118,14 +111,8 @@ public abstract class BlueLeft extends LinearOpMode {
         waitForStart();
 
 
-        executeTele(State.START, bot);
-        execute(propDetection.getPosition(), drive, bot);
-
-
-
-
-
-
+        //executeTele(START, bot);
+        execute(propDetection.getPosition());
 
 
         /*
@@ -140,106 +127,70 @@ public abstract class BlueLeft extends LinearOpMode {
          */
 
 
-
-
     }
-
     public abstract void setCameraPosition();
+
     public abstract void build();
-    public void execute(PropDetection.TSEPosition position, SampleMecanumDrive drive, Robot bot){  //this is where you want to put the camera action code
 
-        Pose2d startPose = new Pose2d(0,0,Math.toRadians(90));
+    public void execute(PropDetection.TSEPosition position) {  //this is where you want to put the camera action code
+
+        Pose2d startPose = new Pose2d(startX, startY, Math.toRadians(startAngle));
+
+        Trajectory spikeLeft = drive.trajectoryBuilder(startPose, false)
+                .lineToLinearHeading(new Pose2d(spikeLeft_x, spikeLeft_y, Math.toRadians(spikeLeft_angle)))
+                .build();
+
+        Trajectory spikeRight = drive.trajectoryBuilder(startPose, false)
+                .lineToLinearHeading(new Pose2d(spikeRight_x, spikeRight_y, Math.toRadians(spikeRight_angle)))
+                .build();
+
+        Trajectory spikeMiddle = drive.trajectoryBuilder(startPose, false)
+                .lineToLinearHeading(new Pose2d(spikeMiddle_x, spikeMiddle_y, Math.toRadians(spikeMiddle_angle)))
+                .build();
+
+        Trajectory SpikeReset = drive.trajectoryBuilder(spikeLeft.end(), false)
+                .lineToSplineHeading(startPose)
+                .build();
+
+        Trajectory farBlueToBoard = drive.trajectoryBuilder(new Pose2d(), false)
+
+                .strafeTo(new Vector2d(0, 20))
+                .build();
+
         drive.setPoseEstimate(startPose);
-
-
-
-        Trajectory left = drive.trajectoryBuilder(startPose, false)
-                .lineToLinearHeading(new Pose2d(initialLeft_x, initialLeft_y, Math.toRadians(initialLeft_angle)))
-
-                .build();
-
-        Trajectory right = drive.trajectoryBuilder(startPose, false)
-                .lineToLinearHeading(new Pose2d(initialRight_x, initialRight_y, Math.toRadians(initialRight_angle)))
-
-                .build();
-
-        Trajectory middle = drive.trajectoryBuilder(startPose, false)
-                .forward(initialMiddle)
-
-                .build();
-
-
-
-        Trajectory blueCloseLeftPark = drive.trajectoryBuilder(left.end(), false)
-                .splineToConstantHeading(new Vector2d(0,0), Math.toRadians(90))
-
-                .build();
-
-        Trajectory blueCloseRightPark = drive.trajectoryBuilder(right.end(), false)
-                .splineToConstantHeading(new Vector2d(0,0), Math.toRadians(90))
-
-                .build();
-
-        Trajectory blueCloseMiddlePark = drive.trajectoryBuilder(middle.end(), false)
-                .splineToConstantHeading(new Vector2d(0,0), Math.toRadians(90))
-
-                .build();
-
-        ElapsedTime robotTimer = new ElapsedTime();
-
-
-
-
-
         timer.reset();
-        switch(position) {
+
+        switch (position) {
             case LEFT:
+
                 telemetry.addData("TSE POSITION:", "LEFT");
 
-                drive.followTrajectory(left);
-                robotTimer.reset();
-                executeTele(State.SHORT_DEPOSIT, bot);
-                bot.claw.getLeftClaw().setPosition(leftClawOpen);
-                bot.claw.getRightClaw().setPosition(rightClawOpen);
+                drive.followTrajectory(spikeLeft);
+                timer.reset();
+                while (timer.seconds() < 4) {
+                    if (timer.seconds() < 2.5) {
+                        bot.setState(State.INTAKE);
+                        bot.executeTele();
+                    } else {
+                        bot.setState(State.REST);
+                        bot.executeTele();
+                    }
+                }
+                drive.followTrajectory(SpikeReset);
 
-                robotTimer.reset();
-                executeTele(State.RETRACT, bot);
-
-
-                //drive.followTrajectory(blueCloseLeftPark);
 
                 break;
 
 
             case RIGHT:
                 telemetry.addData("TSE POSITION:", "RIGHT");
-
-                //drive.followTrajectory(right);
-                drive.followTrajectory(right);
-                robotTimer.reset();
-                executeTele(State.SHORT_DEPOSIT, bot);
-                bot.claw.getLeftClaw().setPosition(leftClawOpen);
-                bot.claw.getRightClaw().setPosition(rightClawOpen);
-
-                robotTimer.reset();
-                executeTele(State.RETRACT, bot);
-
                 break;
+
             case MIDDLE:
                 telemetry.addData("TSE POSITION:", "MIDDLE");
-                drive.followTrajectory(middle);
-                robotTimer.reset();
-                executeTele(State.SHORT_DEPOSIT, bot);
-                bot.claw.getLeftClaw().setPosition(leftClawOpen);
-                bot.claw.getRightClaw().setPosition(rightClawOpen);
-
-                robotTimer.reset();
-                executeTele(State.RETRACT, bot);
                 break;
 
         }
-
-
     }
 
     private void initCam() {
@@ -248,142 +199,15 @@ public abstract class BlueLeft extends LinearOpMode {
         propDetection = new PropDetection();
         camera.setPipeline(propDetection); //prop detection
 
-        camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
-        {
+        camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
             @Override
-            public void onOpened()
-            {
-                camera.startStreaming(320,240, OpenCvCameraRotation.SIDEWAYS_RIGHT);
+            public void onOpened() {
+                camera.startStreaming(320, 240, OpenCvCameraRotation.SIDEWAYS_RIGHT);
             }
 
             @Override
-            public void onError(int errorCode) {}
+            public void onError(int errorCode) {
+            }
         });
     }
-
-    public void executeTele(State state, Robot bot) {
-        ElapsedTime robotTimer = new ElapsedTime();
-        robotTimer.reset();
-        //driver.readButtons();
-        //operator.readButtons();
-        //telemetry.addData("Time: ", robotTimer.seconds());
-        //telemetry.addData("B is down: ", operator.isDown(GamepadKeys.Button.B));
-        /*
-        if(!(lastState==state)) {
-            robotTimer.reset();
-            lastState = state;
-        }
-
-         */
-        switch(state) {
-            case START:
-                break;
-            case REST:
-                if(robotTimer.seconds()<0.5) {
-                    if (doClose) {
-                        bot.claw.closeRight();
-                        bot.claw.closeLeft();
-                    } else {
-                        bot.claw.openRight();
-                        bot.claw.openLeft();
-                    }
-                }
-                if(robotTimer.seconds()>0.5) {
-                    bot.arm.transition();
-                    bot.wrist.transition();
-                    bot.claw.closeRight();
-                    bot.claw.closeLeft();
-                    if(robotTimer.seconds()>1.2 && robotTimer.seconds()<1.9) {
-                        bot.intake.intakeManualIn();
-                    }
-                    if(robotTimer.seconds()>=1.9) {
-                        bot.intake.holdIntake();
-                    }
-                }
-                break;
-
-            case INTAKE:
-                if(robotTimer.seconds()<0.7) {
-                    bot.intake.intakeManualOut();
-                }
-                if(robotTimer.seconds()>=0.7) {
-                    bot.intake.holdIntake();
-                    bot.arm.intake();
-                    bot.wrist.intake();
-                    bot.claw.openLeft();
-                    bot.claw.openRight();
-                    doClose = true;
-                }
-                if(robotTimer.seconds()>1.2 ) {
-                    state = REST;
-                }
-                break;
-
-            case SHORT_DEPOSIT:
-                while(robotTimer.seconds()<1.9) {
-                    bot.intake.intakeManualOut();
-                }
-                while(robotTimer.seconds()>=1.9) {
-                    bot.intake.holdIntake();
-                    bot.arm.shortDeposit();
-                    bot.wrist.shortDeposit();
-                    bot.claw.openLeft();
-                    bot.claw.openRight();
-
-                    doClose = false;
-                }
-                if(robotTimer.milliseconds()>700 ) {
-                    state = REST;
-                }
-
-                break;
-
-            case EXTEND:
-                bot.claw.looseLeft();
-                bot.claw.looseRight();
-                if(robotTimer.seconds()>0.5 && robotTimer.seconds()<1.0) {
-                    bot.deposit.readyToClamp();
-                }
-                if(robotTimer.seconds()>1.0 && robotTimer.seconds()<1.5) {
-                    bot.deposit.closeLeftClamp();
-                    bot.deposit.closeRightClamp();
-                }
-                if(robotTimer.seconds()>1.5 ) {
-                    bot.slides.slidesManualUp();
-                }
-                if(robotTimer.seconds()>1.5) {
-                    bot.slides.holdSlides();
-                }
-                break;
-            case DEPOSIT:
-
-                break;
-            case RETURNING:
-                bot.claw.looseLeft();
-                bot.claw.looseRight();
-                bot.deposit.transitioning();
-                if(robotTimer.seconds()>0.5 && robotTimer.seconds()<1.0) {
-                    bot.deposit.closeLeftClamp();
-                    bot.deposit.closeRightClamp();
-                }
-                if(robotTimer.seconds()>1.0 ) {
-                    bot.slides.slidesManualDown();
-                }
-                if(robotTimer.seconds()>1.0) {
-                    bot.slides.holdSlides();
-                }
-
-                break;
-            case RETRACT:
-                doClamp = false;
-                bot.deposit.openRightClamp();
-                bot.deposit.openLeftClamp();
-                bot.deposit.depositing();
-
-        }
-        telemetry.update();
-    }
-
-
 }
-

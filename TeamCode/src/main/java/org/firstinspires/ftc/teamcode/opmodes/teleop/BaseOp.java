@@ -33,6 +33,7 @@ public abstract class BaseOp extends OpMode {
     public static double leftClampOpen = 0.5, leftClampClosed = 0.4;
     public static double rightClampOpen = 0.5, rightClampClosed = 0.58;
     public static double depositResting = 0.55, transition = 0.6, extake = 0.28;
+    public static boolean climb = false;
 
 
     private ElapsedTime teleTimer = new ElapsedTime();
@@ -113,7 +114,7 @@ public abstract class BaseOp extends OpMode {
         bot.drivetrain.drive(driver);
 
         if (driver.wasJustPressed(Button.Y)) {                                        // DPad Up = Reset Gyro
-            bot.drivetrain.recenter();
+            bot.setState(State.CLIMB);
         }
 
         if (driver.getTrigger(Trigger.LEFT_TRIGGER) > 0.1) {                          // Relative speed by dead zone
@@ -124,11 +125,11 @@ public abstract class BaseOp extends OpMode {
             desiredSpeed = 0.7 * multiplier;
         }
 
-        if (driver.isDown(Button.RIGHT_BUMPER)) {
+        if (driver.isDown(Button.B)) {
             desiredSpeed *= 0.5;
         }
 
-        if (driver.isDown(Button.LEFT_BUMPER)) {
+        if (driver.isDown(Button.X)) {
             bot.drivetrain.switchModes();
         }
 
@@ -140,43 +141,42 @@ public abstract class BaseOp extends OpMode {
         }
 
 
-        if (driver.wasJustPressed(Button.A)) {
+        if (driver.wasJustPressed(Button.DPAD_DOWN)) {
             bot.plane.getPlane().setPosition(0);
-        } else if (driver.wasJustPressed(Button.B)) {
+        } else if (driver.wasJustPressed(Button.DPAD_UP)) {
             bot.plane.getPlane().setPosition(1);
-        } else if (driver.wasJustPressed(Button.Y)) {
-            bot.setState(State.CLIMB);
         }
 
         // ---------------------------- OPERATOR CODE ---------------------------- //
 
-
-        if (driver.wasJustPressed(Button.A)) {
-            bot.plane.getPlane().setPosition(0);
-        } else if (driver.wasJustPressed(Button.B)) {
-            bot.plane.getPlane().setPosition(1);
-        } else if (driver.wasJustPressed(Button.Y)) {
-            bot.setState(State.CLIMB);
-        }
-
         if(operator.isDown(Button.A)) {
             bot.setState(State.DEPOSIT);
-        } else if(operator.isDown(Button.B)) {
+        } else if(driver.isDown(Button.RIGHT_BUMPER)) {
             bot.setState(State.INTAKE);
-        } else if(operator.isDown(Button.X)) {
+        } else if(driver.isDown(Button.LEFT_BUMPER)) {
             bot.setState(State.SHORT_DEPOSIT);
-        } else if(operator.isDown(Button.RIGHT_BUMPER)) {                          //SLIDES UP
+        } else if(operator.isDown(Button.RIGHT_BUMPER)){
             bot.setState(State.EXTEND);
-        } else if(operator.isDown(Button.LEFT_BUMPER)) {                    //SLIDES DOWN
+        } else if(operator.isDown(Button.LEFT_BUMPER)) {
             bot.setState(State.RETURNING);
-        } else {                                                                    //STOP SLIDES
-            bot.setState(State.REST);
+        } else {
+            if (climb) {
+                bot.setState(State.CLIMB);
+            } else {
+                bot.setState(State.REST);
+            }
         }
+
+        if (driver.isDown(Button.Y)) {
+            climb = true;
+        }
+
         bot.executeTele();
 
-        telemetry.addData("Left Slide Position: ", bot.slides.getLeftSlide().getCurrentPosition());
-        telemetry.addData("Right Slide Position: ", bot.slides.getRightSlide().getCurrentPosition());
-        telemetry.addData("Intake Motor Position: ", bot.intake.getIntake().getCurrentPosition());
+        //telemetry.addLine("Left Slide Position: " + bot.slides.getLeftPosition());
+        //telemetry.addLine("Right Slide Position: " + bot.slides.getRightPosition());
+        telemetry.addLine("STATE: " + bot.getState());
+        telemetry.addLine("is B down: " + operator.isDown(Button.B));
         telemetry.update();
 
     }
