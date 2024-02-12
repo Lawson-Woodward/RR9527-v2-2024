@@ -33,7 +33,7 @@ public abstract class BaseOp extends OpMode {
     public static double leftClampOpen = 0.5, leftClampClosed = 0.4;
     public static double rightClampOpen = 0.5, rightClampClosed = 0.58;
     public static double depositResting = 0.55, transition = 0.6, extake = 0.28;
-    public static boolean climb = false;
+    private boolean climb = false;
 
 
     private ElapsedTime teleTimer = new ElapsedTime();
@@ -129,7 +129,7 @@ public abstract class BaseOp extends OpMode {
             desiredSpeed *= 0.5;
         }
 
-        if (driver.isDown(Button.X)) {
+        if (driver.wasJustPressed(Button.X)) {
             bot.drivetrain.switchModes();
         }
 
@@ -141,9 +141,9 @@ public abstract class BaseOp extends OpMode {
         }
 
 
-        if (driver.wasJustPressed(Button.DPAD_DOWN)) {
+        if (operator.wasJustPressed(Button.X)) {
             bot.plane.getPlane().setPosition(0);
-        } else if (driver.wasJustPressed(Button.DPAD_UP)) {
+        } else if (operator.wasJustPressed(Button.Y)) {
             bot.plane.getPlane().setPosition(1);
         }
 

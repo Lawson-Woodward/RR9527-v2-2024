@@ -18,7 +18,8 @@ public class Robot {
 
     public Drivetrain drivetrain;
     private static ElapsedTime robotTimer = new ElapsedTime();
-    public boolean doClose = true, doClamp = false, purpleDeosited = false;
+    private boolean doClose = true, doClamp = false, purpleDeposited = false, yellowDeposited = false, delayClaw = true;
+    private ElapsedTime intakeTimer = new ElapsedTime();
     public Arm arm;
     public Wrist wrist;
     public Claw claw;
@@ -90,12 +91,14 @@ public class Robot {
         telemetry.addData("B is down: ", operator.isDown(GamepadKeys.Button.B));
         if(!(lastState==state)) {
             robotTimer.reset();
+            intakeTimer.reset();
             lastState = state;
         }
         switch(state) {
             case START:
                 break;
             case REST:
+                delayClaw = true;
                 leftSlide.setPower(0.0);
                 rightSlide.setPower(0.0);
                 if(!doClamp) {
@@ -122,7 +125,7 @@ public class Robot {
                     wrist.transition();
                     claw.closeRight();
                     claw.closeLeft();
-                    if(intake.getIntake().getCurrentPosition() < -40) { //intake is all the way in
+                    if(intake.getIntake().getCurrentPosition() < -20) { //intake is all the way in
                         intake.intakeManualIn();
                     } else {
                         intake.holdIntake();
@@ -138,8 +141,14 @@ public class Robot {
                     intake.holdIntake();
                     arm.intake();
                     wrist.intake();
-                    claw.openRight();
-                    claw.openLeft();
+                    if(delayClaw) {
+                        intakeTimer.reset();
+                        delayClaw = false;
+                    }
+                    if(intakeTimer.seconds() > 0.3) {
+                        claw.openRight();
+                        claw.openLeft();
+                    }
                     doClose = true;
                 }
                 break;
@@ -230,8 +239,8 @@ public class Robot {
                 rightSlide.setPower(1);
                 leftSlide.setPower(1);
                 if(robotTimer.seconds()>3) {
-                    rightSlide.setPower(0.5);
-                    leftSlide.setPower(0.5);
+                    rightSlide.setPower(0.25);
+                    leftSlide.setPower(0.25);
                 }
                 break;
 
@@ -271,7 +280,7 @@ public class Robot {
                         claw.openRight();
                         claw.openLeft();
                     }
-                    if(purpleDeosited) {
+                    if(purpleDeposited) {
                         claw.closeLeft();
                     }
                     if(robotTimer.seconds()>0.5) {
@@ -294,6 +303,8 @@ public class Robot {
             case PURPLE:
                 doClamp = false;
                 if(intake.getIntake().getCurrentPosition() > -900) { //intake is out
+                    claw.closeRight();
+                    claw.closeLeft();
                     intake.intakeManualOut();
                 } else {
                     intake.holdIntake();
@@ -303,7 +314,23 @@ public class Robot {
                     claw.closeLeft();
                     doClose = false;
                 }
-                purpleDeosited = true;
+                purpleDeposited = true;
+                break;
+
+            case YELLOW:
+                doClamp = false;
+                purpleDeposited = false;
+                if(intake.getIntake().getCurrentPosition() > -900) { //intake is out
+                    intake.intakeManualOut();
+                } else {
+                    intake.holdIntake();
+                    arm.shortDeposit();
+                    wrist.shortDeposit();
+                    claw.closeRight();
+                    claw.closeLeft();
+                    doClose = false;
+                }
+                yellowDeposited = true;
                 break;
 
             case SHORT_DEPOSIT:

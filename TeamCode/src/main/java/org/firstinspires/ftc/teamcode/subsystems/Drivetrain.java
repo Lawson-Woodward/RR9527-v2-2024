@@ -12,6 +12,8 @@ public class Drivetrain implements Subsystem {
     double y, x, rx, FLPower, BLPower, FRPower, BRPower, heading, rotX, rotY;
     private RevIMU imu;
     private Mode mode;
+    private HardwareMap hwmap;
+    private boolean resetIMU = false;
     private double speed = 1, desiredHeading = 0.0;
 
     enum Mode {
@@ -24,6 +26,7 @@ public class Drivetrain implements Subsystem {
         BL = hardwareMap.get(DcMotorEx.class, "BL");
         FR = hardwareMap.get(DcMotorEx.class, "FR");
         BR = hardwareMap.get(DcMotorEx.class, "BR");
+        hwmap = hardwareMap;
 
         //BR.setDirection(DcMotorEx.Direction.REVERSE);
         //FR.setDirection(DcMotorEx.Direction.REVERSE);
@@ -44,6 +47,7 @@ public class Drivetrain implements Subsystem {
     public void switchModes() {
         if(mode.equals(Mode.RC)) {
             mode = Mode.FC;
+            resetIMU = true;
             //reverse();
         }
         else {
@@ -68,6 +72,11 @@ public class Drivetrain implements Subsystem {
 
         switch (mode){
             case FC:
+                if(resetIMU) {
+                    imu = new RevIMU(hwmap);
+                    imu.init();
+                    resetIMU = false;
+                }
                 heading = Math.toRadians(-imu.getHeading());
                 rotX = x * Math.cos(heading) - y * Math.sin(heading);
                 rotY = x * Math.sin(heading) + y * Math.cos(heading);

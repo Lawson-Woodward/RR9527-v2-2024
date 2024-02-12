@@ -30,7 +30,7 @@ import org.firstinspires.ftc.teamcode.subsystems.Wrist;
 
 
 @Config
-public abstract class RedLeft extends LinearOpMode {
+public abstract class Spike extends LinearOpMode {
 
     public double armTransition = 0.52, armShortDeposit = 0.68, armIntaking = 0.99;
     public double wristShortDeposit = 0.53, wristIntaking = 0.64, wristTransition = 0.73;
@@ -79,7 +79,7 @@ public abstract class RedLeft extends LinearOpMode {
     public static double middleToBoardSpline1_y = -40;
     public static double middleToBoardSpline1_angle = -4;
 
-    public static double middleToBoardSpline2_x = 41.5;   //maybe??
+    public static double middleToBoardSpline2_x = 40;   //maybe??
     public static double middleToBoardSpline2_y = -40;
     public static double middleToBoardSpline2_angle = -4;
 
@@ -112,14 +112,9 @@ public abstract class RedLeft extends LinearOpMode {
     public static double rightToBoardSpline3_y = -49;
     public static double rightToBoardSpline3_angle = -13;
 
-
-    public static double park1_x = 38;
-    public static double park1_y = -62;
-    public static double park1_angle = -5;
-
-    public static double park2_x = 62;
-    public static double park2_y = -62;
-    public static double park2_angle = -5;
+    public static double park_x = -63.5;
+    public static double park_y = 35;
+    public static double park_angle = -5;
 
 
 
@@ -235,19 +230,21 @@ public abstract class RedLeft extends LinearOpMode {
                 .build();
 
         TrajectorySequence boardRightToPark = drive.trajectorySequenceBuilder(rightSpikeReset.end())
-                .lineToSplineHeading(new Pose2d(park1_x, park1_y, Math.toRadians(park1_angle)))
+                .lineToSplineHeading(new Pose2d(park_x, park_y, Math.toRadians(park_angle)))
+                .waitSeconds(0.1)
+                .forward(27)
                 .build();
 
-        TrajectorySequence boardLeftToPark = drive.trajectorySequenceBuilder(leftSpikeReset.end())
-                .lineToSplineHeading(new Pose2d(park1_x, park1_y, Math.toRadians(park1_angle)))
+        TrajectorySequence boardLeftToPark = drive.trajectorySequenceBuilder(rightSpikeReset.end())
+                .lineToSplineHeading(new Pose2d(park_x, park_y, Math.toRadians(park_angle)))
+                .waitSeconds(0.1)
+                .forward(27)
                 .build();
 
-        TrajectorySequence boardMiddleToPark = drive.trajectorySequenceBuilder(spikeReset.end())
-                .lineToSplineHeading(new Pose2d(park1_x, park1_y, Math.toRadians(park1_angle)))
-                .build();
-
-        TrajectorySequence parkFinal = drive.trajectorySequenceBuilder(boardMiddleToPark.end())
-                .forward(30)
+        TrajectorySequence boardMiddleToPark = drive.trajectorySequenceBuilder(rightSpikeReset.end())
+                .lineToSplineHeading(new Pose2d(park_x, park_y, Math.toRadians(park_angle)))
+                .waitSeconds(0.1)
+                .forward(27)
                 .build();
 
 
@@ -255,10 +252,7 @@ public abstract class RedLeft extends LinearOpMode {
 
 
         timer.reset();
-        //while(timer.seconds()<5) {
 
-        //}
-        //timer.reset();
         switch (position) {
             case LEFT:
                 telemetry.addData("TSE POSITION:", "LEFT");
@@ -272,19 +266,6 @@ public abstract class RedLeft extends LinearOpMode {
                     bot.setState(State.REST);
                     bot.executeAuto();
                 }
-                drive.followTrajectory(leftSpikeReset);
-                drive.followTrajectorySequence(leftToBoard1);
-                timer.reset();
-                while (timer.seconds() < 1) {
-                    bot.setState(State.YELLOW);
-                    bot.executeAuto();
-                }
-                while(timer.seconds()<2.5) {
-                    bot.setState(State.REST);
-                    bot.executeAuto();
-                }
-                //drive.followTrajectorySequence(boardLeftToPark);
-                //drive.followTrajectorySequence(parkFinal);
                 break;
 
 
@@ -299,20 +280,6 @@ public abstract class RedLeft extends LinearOpMode {
                     bot.setState(State.REST);
                     bot.executeAuto();
                 }
-                drive.followTrajectory(rightSpikeReset);
-                drive.followTrajectory(rightToBoard1);
-                drive.followTrajectorySequence(rightToBoard2);
-                timer.reset();
-                while (timer.seconds() < 1) {
-                    bot.setState(State.YELLOW);
-                    bot.executeAuto();
-                }
-                while(timer.seconds()<2.5) {
-                    bot.setState(State.REST);
-                    bot.executeAuto();
-                }
-                //drive.followTrajectorySequence(boardRightToPark);
-                //drive.followTrajectorySequence(parkFinal);
                 break;
 
             case MIDDLE:
@@ -328,19 +295,6 @@ public abstract class RedLeft extends LinearOpMode {
                     bot.executeAuto();
                 }
                 drive.followTrajectory(spikeReset);
-                drive.followTrajectory(middleToBoard1);
-                drive.followTrajectory(middleToBoard2);
-                timer.reset();
-                while (timer.seconds() < 1) {
-                    bot.setState(State.YELLOW);
-                    bot.executeAuto();
-                }
-                while(timer.seconds()<2.5) {
-                    bot.setState(State.REST);
-                    bot.executeAuto();
-                }
-                //drive.followTrajectorySequence(boardMiddleToPark);
-                //drive.followTrajectorySequence(parkFinal);
                 break;
 
         }
